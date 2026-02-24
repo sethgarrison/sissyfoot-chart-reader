@@ -1,10 +1,35 @@
 <script lang="ts">
+  import { fetchChart, type ChartApiParams } from "../api/chartApi";
   import type { NatalChart } from "../models";
 
   interface Props {
     chart?: NatalChart | null;
   }
-  let { chart = null }: Props = $props();
+  let { chart = $bindable(null) }: Props = $props();
+
+  let form = $state<ChartApiParams>({
+    year: 1970,
+    month: 8,
+    day: 8,
+    hour: 17,
+    min: 55,
+    city: "Bakersfield,CA",
+    nation: "US",
+  });
+  let loading = $state(false);
+  let error = $state<string | null>(null);
+
+  async function handleSubmit() {
+    loading = true;
+    error = null;
+    try {
+      chart = await fetchChart(form);
+    } catch (e) {
+      error = e instanceof Error ? e.message : "Failed to fetch chart";
+    } finally {
+      loading = false;
+    }
+  }
 </script>
 
 <aside class="sidebar">
@@ -15,6 +40,41 @@
 
   <section class="sidebar-section">
     <h2>Birth Data</h2>
+    <form class="chart-form" onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+      <label>
+        <span>Date</span>
+        <div class="date-row">
+          <input type="number" bind:value={form.month} min="1" max="12" placeholder="MM" />
+          <input type="number" bind:value={form.day} min="1" max="31" placeholder="DD" />
+          <input type="number" bind:value={form.year} min="1900" max="2100" placeholder="YYYY" />
+        </div>
+      </label>
+      <label>
+        <span>Time (local)</span>
+        <div class="date-row">
+          <input type="number" bind:value={form.hour} min="0" max="23" placeholder="HH" />
+          <input type="number" bind:value={form.min} min="0" max="59" placeholder="MM" />
+        </div>
+      </label>
+      <label>
+        <span>City, State</span>
+        <input type="text" bind:value={form.city} placeholder="Laurel,MS" />
+      </label>
+      <label>
+        <span>Country</span>
+        <input type="text" bind:value={form.nation} placeholder="US" />
+      </label>
+      {#if error}
+        <p class="form-error">{error}</p>
+      {/if}
+      <button type="submit" disabled={loading}>
+        {loading ? "Loading…" : "Get Chart"}
+      </button>
+    </form>
+  </section>
+
+  <section class="sidebar-section">
+    <h2>Chart Data</h2>
     {#if chart}
       <dl class="birth-data">
         <dt>Name</dt>
@@ -112,6 +172,63 @@
     gap: 0.25rem 0.75rem;
     font-size: 0.85rem;
   }
+
+  .chart-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+  }
+  .chart-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  .chart-form label span {
+    color: #8b949e;
+    font-size: 0.75rem;
+  }
+  .chart-form input {
+    padding: 0.4rem 0.5rem;
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 4px;
+    color: #c9d1d9;
+  }
+  .chart-form input:focus {
+    outline: none;
+    border-color: #58a6ff;
+  }
+  .date-row {
+    display: flex;
+    gap: 0.25rem;
+  }
+  .date-row input {
+    flex: 1;
+  }
+  .chart-form button {
+    margin-top: 0.25rem;
+    padding: 0.5rem;
+    background: #238636;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  .chart-form button:hover:not(:disabled) {
+    background: #2ea043;
+  }
+  .chart-form button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  .form-error {
+    color: #f85149;
+    font-size: 0.8rem;
+    margin: 0;
+  }
+
   .birth-data dt {
     color: #8b949e;
   }

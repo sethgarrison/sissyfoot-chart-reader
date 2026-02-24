@@ -1,13 +1,29 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import ChartCanvas from "./lib/components/ChartCanvas.svelte";
   import Sidebar from "./lib/components/Sidebar.svelte";
-  import { SAMPLE_CHART } from "./lib/models";
+  import { fetchChart } from "./lib/api/chartApi";
+  import type { NatalChart } from "./lib/models";
 
-  const chart = SAMPLE_CHART;
+  let chart = $state<NatalChart | null>(null);
+
+  onMount(() => {
+    fetchChart({
+      year: 1970,
+      month: 8,
+      day: 8,
+      hour: 17,
+      min: 55,
+      city: "Bakersfield,CA",
+      nation: "US",
+    })
+      .then((c) => (chart = c))
+      .catch(() => {});
+  });
 </script>
 
 <div class="app-shell">
-  <Sidebar {chart} />
+  <Sidebar bind:chart />
   <main class="main-content">
     <ChartCanvas {chart} />
   </main>

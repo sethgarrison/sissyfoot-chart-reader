@@ -38,19 +38,72 @@ npm install
 npm run dev
 ```
 
-## Data Models
+## Data Models (API Contract)
 
-Models live in `src/lib/models/`. The two key interfaces:
+Chart data lives in `src/lib/models/reading.ts`. This is the agreed contract for the chart API — both request input and response shape.
 
-- **`ZodiacSign`** — static definition of the 12 signs (element, modality, ruling planet, degree range)
-- **`NatalChart`** — a complete chart reading (birth data, planet placements, house cusps, aspects, ascendant, midheaven)
+### Request: `BirthData`
 
-These are designed to match what a backend ephemeris calculation would produce. A `SAMPLE_CHART` constant is provided for development.
+Input for computing a natal chart:
 
-## Roadmap
+```ts
+interface BirthData {
+  name: string;
+  date: string;        // ISO date: "1990-06-15"
+  time: string;        // "14:30" (local time)
+  latitude: number;
+  longitude: number;
+  timezone: string;    // IANA: "America/New_York"
+}
+```
 
-- [ ] Backend service for chart calculation (ephemeris)
-- [ ] Birth data entry form
+### Response: `NatalChart`
+
+Complete chart reading returned by the API:
+
+```ts
+interface NatalChart {
+  birthData: BirthData;
+  planets: PlanetPlacement[];
+  houses: HouseCusp[];
+  aspects: Aspect[];
+  ascendant: { sign: string; degrees: number; minutes: number };
+  midheaven: { sign: string; degrees: number; minutes: number };
+}
+
+interface PlanetPlacement {
+  planet: string;     // "Sun", "Moon", "Mercury", ...
+  sign: string;       // "Aries", "Taurus", ...
+  house: number;      // 1–12
+  degrees: number;
+  minutes: number;
+  retrograde: boolean;
+}
+
+interface HouseCusp {
+  house: number;      // 1–12
+  sign: string;
+  degrees: number;
+  minutes: number;
+}
+
+interface Aspect {
+  planet1: string;
+  planet2: string;
+  type: "conjunction" | "opposition" | "trine" | "square" | "sextile";
+  orb: number;
+}
+```
+
+Sign names: Aries, Taurus, Gemini, Cancer, Leo, Virgo, Libra, Scorpio, Sagittarius, Capricorn, Aquarius, Pisces.
+
+A `SAMPLE_CHART` constant is provided for development.
+
+## API Integration
+
+The app fetches natal charts from the [sissyfoot-astrological-api](https://sissyfoot-astrological-api.onrender.com/chart) via GET with query params: `year`, `month`, `day`, `hour`, `min`, `city`, `nation`. City format: `"City,State"` (e.g. `Laurel,MS`).
+
+The API response is transformed to our internal `NatalChart` format via `chartFromApiResponse()` in `reading.ts`.
 - [ ] Interactive planet/aspect hover tooltips
 - [ ] Transit charts & synastry overlays
 - [ ] Chart persistence / export

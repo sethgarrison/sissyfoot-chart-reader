@@ -56,6 +56,118 @@ export interface NatalChart {
 }
 
 /**
+ * Response shape from the astrological chart API.
+ * @see https://sissyfoot-astrological-api.onrender.com/chart
+ */
+export interface ChartApiResponse {
+  name: string | null;
+  birth_datetime: string;
+  latitude: number;
+  longitude: number;
+  sun_sign: string;
+  moon_sign: string;
+  rising_sign: string;
+  lunar_phase?: {
+    degrees_between: number;
+    phase_name: string;
+    emoji: string;
+  };
+  planets: Array<{
+    name: string;
+    sign: string;
+    sign_num: number;
+    degree: number;
+    abs_degree: number;
+    house: number;
+    retrograde: boolean;
+    speed: number;
+  }>;
+  houses: Array<{
+    number: number;
+    sign: string;
+    degree: number;
+    abs_degree: number;
+  }>;
+  aspects: Array<{
+    planet1: string;
+    planet2: string;
+    aspect: string;
+    aspect_degrees: number;
+    orbit: number;
+    movement: string;
+  }>;
+}
+
+/** Convert decimal degrees to degrees + minutes. */
+function degToDegMin(deg: number): { degrees: number; minutes: number } {
+  const d = Math.floor(deg);
+  const m = Math.round((deg - d) * 60);
+  return { degrees: d, minutes: m };
+}
+
+/** Map API response to our NatalChart format. Filters to supported planets/aspects. */
+export function chartFromApiResponse(api: ChartApiResponse): NatalChart {
+  const [datePart, timePart] = api.birth_datetime.split("T");
+  const time = timePart?.slice(0, 5) ?? "00:00";
+
+  const birthData: BirthData = {
+    name: api.name ?? "Chart",
+    date: datePart ?? "",
+    time,
+    latitude: api.latitude,
+    longitude: api.longitude,
+    timezone: "UTC",
+  };
+
+  const supportedPlanets = new Set(["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Pluto"]);
+  const planets: PlanetPlacement[] = api.planets
+    .filter((p) => supportedPlanets.has(p.name))
+    .map((p) => {
+      const { degrees, minutes } = degToDegMin(p.degree);
+      return {
+        planet: p.name,
+        sign: p.sign,
+        house: p.house,
+        degrees,
+        minutes,
+        retrograde: p.retrograde,
+      };
+    });
+
+  const houses: HouseCusp[] = api.houses.map((h) => {
+    const { degrees, minutes } = degToDegMin(h.degree);
+    return { house: h.number, sign: h.sign, degrees, minutes };
+  });
+
+  const supportedAspects = new Set(["conjunction", "opposition", "trine", "square", "sextile"]);
+  const aspects: Aspect[] = api.aspects
+    .filter((a) => supportedAspects.has(a.aspect))
+    .filter((a) => supportedPlanets.has(a.planet1) && supportedPlanets.has(a.planet2))
+    .map((a) => ({
+      planet1: a.planet1,
+      planet2: a.planet2,
+      type: a.aspect as Aspect["type"],
+      orb: Math.round(a.orbit * 10) / 10,
+    }));
+
+  const house1 = api.houses.find((h) => h.number === 1);
+  const house10 = api.houses.find((h) => h.number === 10);
+
+  return {
+    birthData,
+    planets,
+    houses,
+    aspects,
+    ascendant: house1
+      ? { ...degToDegMin(house1.degree), sign: house1.sign }
+      : { sign: api.rising_sign, degrees: 0, minutes: 0 },
+    midheaven: house10
+      ? { ...degToDegMin(house10.degree), sign: house10.sign }
+      : { sign: "Aries", degrees: 0, minutes: 0 },
+  };
+}
+
+/**
  * Placeholder sample chart for development / rendering tests.
  */
 export const SAMPLE_CHART: NatalChart = {
