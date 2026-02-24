@@ -104,6 +104,24 @@ A `SAMPLE_CHART` constant is provided for development.
 The app fetches natal charts from the [sissyfoot-astrological-api](https://sissyfoot-astrological-api.onrender.com/chart) via GET with query params: `year`, `month`, `day`, `hour`, `min`, `city`, `nation`. City format: `"City,State"` (e.g. `Laurel,MS`).
 
 The API response is transformed to our internal `NatalChart` format via `chartFromApiResponse()` in `reading.ts`.
+
+## Deploy to Render (Static Site)
+
+The app is configured to deploy as a static site on [Render](https://render.com/).
+
+### Via Dashboard
+
+1. In [Render Dashboard](https://dashboard.render.com/), click **New** → **Static Site**
+2. Connect your GitHub/GitLab repository
+3. Render will detect the `render.yaml` blueprint and use:
+   - **Build command:** `npm install && npm run build`
+   - **Publish directory:** `dist`
+
+### Via Blueprint
+
+If you use [Render Blueprints](https://render.com/docs/infrastructure-as-code), the `render.yaml` in this repo defines the static site. Connect the repo and Render will create the service from the blueprint.
+
+Your site will be available at `https://<service-name>.onrender.com`. You can add a [custom domain](https://render.com/docs/custom-domains) in the dashboard.
 - [ ] Interactive planet/aspect hover tooltips
 - [ ] Transit charts & synastry overlays
 - [ ] Chart persistence / export

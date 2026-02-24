@@ -1,0 +1,6 @@
+services:
+  - type: web
+    runtime: static
+    name: astro-chart
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
