@@ -44,6 +44,20 @@ export interface BirthData {
 }
 
 /**
+ * Chart interpretations from the API.
+ */
+export interface ChartInterpretations {
+  planet_in_sign?: Record<string, string>;
+  planet_in_house?: Record<string, string>;
+  aspects?: Record<string, string>;
+  chart_shape?: {
+    primary?: string;
+    interpretation?: string;
+    distribution?: Record<string, string>;
+  };
+}
+
+/**
  * A complete natal chart reading.
  */
 export interface NatalChart {
@@ -53,6 +67,7 @@ export interface NatalChart {
   aspects: Aspect[];
   ascendant: { sign: string; degrees: number; minutes: number };
   midheaven: { sign: string; degrees: number; minutes: number };
+  interpretations?: ChartInterpretations;
 }
 
 /**
@@ -96,6 +111,16 @@ export interface ChartApiResponse {
     orbit: number;
     movement: string;
   }>;
+  interpretations?: {
+    planet_in_sign?: Record<string, string>;
+    planet_in_house?: Record<string, string>;
+    aspects?: Record<string, string>;
+    chart_shape?: {
+      primary?: string;
+      interpretation?: string;
+      distribution?: Record<string, string>;
+    };
+  };
 }
 
 /** Convert decimal degrees to degrees + minutes. */
@@ -164,6 +189,7 @@ export function chartFromApiResponse(api: ChartApiResponse): NatalChart {
     midheaven: house10
       ? { ...degToDegMin(house10.degree), sign: house10.sign }
       : { sign: "Aries", degrees: 0, minutes: 0 },
+    interpretations: api.interpretations,
   };
 }
 

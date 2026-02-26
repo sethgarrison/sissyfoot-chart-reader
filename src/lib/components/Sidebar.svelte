@@ -126,6 +126,68 @@
       <p class="placeholder">&mdash;</p>
     {/if}
   </section>
+
+  {#if chart?.interpretations}
+    <section class="sidebar-section interpretations-section">
+      <h2>Interpretations</h2>
+
+      {#if Object.keys(chart.interpretations.planet_in_sign ?? {}).length > 0}
+        <h3 class="interpretations-sub">Planet in Sign</h3>
+        <ul class="interpretations-list">
+          {#each Object.entries(chart.interpretations.planet_in_sign ?? {}) as [key, text]}
+            <li class="interpretation-item">
+              <strong class="interpretation-label">{key}</strong>
+              <p class="interpretation-text">{text}</p>
+            </li>
+          {/each}
+        </ul>
+      {/if}
+
+      {#if Object.keys(chart.interpretations.planet_in_house ?? {}).length > 0}
+        <h3 class="interpretations-sub">Planet in House</h3>
+        <ul class="interpretations-list">
+          {#each Object.entries(chart.interpretations.planet_in_house ?? {}) as [key, text]}
+            <li class="interpretation-item">
+              <strong class="interpretation-label">{key}</strong>
+              <p class="interpretation-text">{text}</p>
+            </li>
+          {/each}
+        </ul>
+      {/if}
+
+      {#if chart.interpretations.chart_shape}
+        <h3 class="interpretations-sub">Chart Shape</h3>
+        {#if chart.interpretations.chart_shape.primary}
+          <p class="interpretation-text"><strong>{chart.interpretations.chart_shape.primary}</strong></p>
+        {/if}
+        {#if chart.interpretations.chart_shape.interpretation}
+          <p class="interpretation-text">{chart.interpretations.chart_shape.interpretation}</p>
+        {/if}
+        {#if chart.interpretations.chart_shape.distribution}
+          <ul class="interpretations-list">
+            {#each Object.entries(chart.interpretations.chart_shape.distribution) as [key, text]}
+              <li class="interpretation-item">
+                <strong class="interpretation-label">{key.replace(/_/g, " ")}</strong>
+                <p class="interpretation-text">{text}</p>
+              </li>
+            {/each}
+          </ul>
+        {/if}
+      {/if}
+
+      {#if Object.keys(chart.interpretations.aspects ?? {}).length > 0}
+        <h3 class="interpretations-sub">Aspect Interpretations</h3>
+        <ul class="interpretations-list">
+          {#each Object.entries(chart.interpretations.aspects ?? {}) as [key, text]}
+            <li class="interpretation-item">
+              <strong class="interpretation-label">{key}</strong>
+              <p class="interpretation-text">{text}</p>
+            </li>
+          {/each}
+        </ul>
+      {/if}
+    </section>
+  {/if}
 </aside>
 
 <style>
@@ -282,5 +344,42 @@
   .aspect-orb {
     color: #484f58;
     font-family: monospace;
+  }
+
+  .interpretations-section {
+    margin-top: 0.5rem;
+  }
+  .interpretations-sub {
+    margin: 1rem 0 0.4rem;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #8b949e;
+  }
+  .interpretations-sub:first-of-type {
+    margin-top: 0.5rem;
+  }
+  .interpretations-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.82rem;
+  }
+  .interpretation-item {
+    padding: 0.35rem 0;
+    border-bottom: 1px solid #21262d;
+  }
+  .interpretation-item:last-child {
+    border-bottom: none;
+  }
+  .interpretation-label {
+    color: #58a6ff;
+    font-weight: 500;
+    display: block;
+  }
+  .interpretation-text {
+    margin: 0.2rem 0 0;
+    color: #c9d1d9;
+    line-height: 1.4;
   }
 </style>

@@ -160,6 +160,10 @@ export class ChartRenderer {
     }
     this.chartContainer.addChild(segmentFill);
 
+    if (this.chart && this.chart.houses.length >= 12) {
+      this.drawHouseSegments();
+    }
+
     const g = new Graphics();
     g.circle(cx, cy, r);
     g.stroke({ width: 2, color: t.wheelStroke });
@@ -174,19 +178,18 @@ export class ChartRenderer {
     g.fill({ color: t.centerFill, alpha: 0.15 });
     g.stroke({ width: 1, color: t.centerStroke });
 
-    const mcDeg = this.chart
-      ? this.signTotalDegrees(this.chart.midheaven.sign, this.chart.midheaven.degrees, this.chart.midheaven.minutes)
-      : 0;
-    for (let i = 0; i < 12; i++) {
-      const eclipticDeg = this.chart ? (mcDeg + i * 30) % 360 : i * 30;
-      const angle = this.eclipticToAngle(eclipticDeg);
+    const houseCusps = this.getHouseCuspAngles();
+    for (let i = 0; i < houseCusps.length; i++) {
+      const angle = houseCusps[i];
       const x1 = cx + Math.cos(angle) * innerRadius;
       const y1 = cy + Math.sin(angle) * innerRadius;
       const x2 = cx + Math.cos(angle) * r;
       const y2 = cy + Math.sin(angle) * r;
-      g.moveTo(x1, y1);
-      g.lineTo(x2, y2);
-      g.stroke({ width: 1, color: t.houseLineStroke });
+      const lineG = new Graphics();
+      lineG.moveTo(x1, y1);
+      lineG.lineTo(x2, y2);
+      lineG.stroke({ width: 1.5, color: t.houseLineStroke });
+      this.chartContainer.addChild(lineG);
     }
 
     this.chartContainer.addChild(g);
@@ -318,6 +321,73 @@ export class ChartRenderer {
     const signObj = ZODIAC_SIGNS.find((s) => s.name === sign);
     if (!signObj) return 0;
     return signObj.degreesStart + degrees + minutes / 60;
+  }
+
+  /** Get house cusp angles in radians (canvas space). Uses actual cusps when chart has houses. */
+  private getHouseCuspAngles(): number[] {
+    if (this.chart?.houses && this.chart.houses.length >= 12) {
+      const sorted = [...this.chart.houses].sort((a, b) => a.house - b.house);
+      return sorted.map((c) =>
+        this.eclipticToAngle(this.signTotalDegrees(c.sign, c.degrees, c.minutes))
+      );
+    }
+    const mcDeg = this.chart
+      ? this.signTotalDegrees(this.chart.midheaven.sign, this.chart.midheaven.degrees, this.chart.midheaven.minutes)
+      : 0;
+    return Array.from({ length: 12 }, (_, i) =>
+      this.eclipticToAngle((mcDeg + i * 30) % 360)
+    );
+  }
+
+  /** Draw filled house segments in the inner band for clearer boundary visibility. */
+  private drawHouseSegments(): void {
+    if (!this.chart?.houses || this.chart.houses.length < 12) return;
+    const { centerX: cx, centerY: cy, outerRadius: r } = this;
+    const innerRadius = r * 0.72;
+    const houseRingRadius = r * 0.55;
+    const t = this.theme.chart;
+
+    const cuspAngles = this.getHouseCuspAngles();
+    if (cuspAngles.length < 12) return;
+
+    const houseFill = new Graphics();
+    const labelRadius = (houseRingRadius + innerRadius) / 2;
+    const houseLabelStyle = new TextStyle({
+      fontFamily: "sans-serif",
+      fontSize: Math.max(10, r * 0.06),
+      fill: t.labelMuted,
+      fontWeight: "600",
+    });
+
+    for (let i = 0; i < 12; i++) {
+      const startAngle = cuspAngles[i];
+      const endAngle = cuspAngles[(i + 1) % 12];
+      const color = i % 2 === 0 ? t.houseFillLight : t.houseFillDark;
+
+      houseFill.moveTo(cx + Math.cos(startAngle) * houseRingRadius, cy + Math.sin(startAngle) * houseRingRadius);
+      houseFill.arc(cx, cy, houseRingRadius, startAngle, endAngle, false);
+      houseFill.lineTo(cx + Math.cos(endAngle) * innerRadius, cy + Math.sin(endAngle) * innerRadius);
+      houseFill.arc(cx, cy, innerRadius, endAngle, startAngle, true);
+      houseFill.closePath();
+      houseFill.fill({ color, alpha: t.houseFillAlpha });
+    }
+    this.chartContainer.addChild(houseFill);
+
+    for (let i = 0; i < 12; i++) {
+      const startAngle = cuspAngles[i];
+      const endAngle = cuspAngles[(i + 1) % 12];
+      const midAngle = (startAngle + endAngle) / 2;
+      const labelX = cx + Math.cos(midAngle) * labelRadius;
+      const labelY = cy + Math.sin(midAngle) * labelRadius;
+      const houseNum = new Text({
+        text: String(i + 1),
+        style: houseLabelStyle,
+      });
+      houseNum.anchor.set(0.5);
+      houseNum.x = labelX;
+      houseNum.y = labelY;
+      this.chartContainer.addChild(houseNum);
+    }
   }
 
   private drawPlanetPlacements(chart: NatalChart): void {

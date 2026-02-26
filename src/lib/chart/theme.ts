@@ -14,6 +14,10 @@ export interface ChartTheme {
     centerFill: number;
     centerStroke: number;
     houseLineStroke: number;
+    /** House segment fill colors (alternating for boundary visibility) */
+    houseFillLight: number;
+    houseFillDark: number;
+    houseFillAlpha: number;
     labelMuted: number;
   };
 
@@ -83,6 +87,9 @@ export const DEFAULT_CHART_THEME: ChartTheme = {
     centerFill: 0x58a6ff,
     centerStroke: 0x58a6ff,
     houseLineStroke: 0x30363d,
+    houseFillLight: 0x21262d,
+    houseFillDark: 0x161b22,
+    houseFillAlpha: 0.85,
     labelMuted: 0xc9d1d9,
   },
   signs: {
