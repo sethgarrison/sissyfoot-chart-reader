@@ -18,13 +18,14 @@ src/
 │   │   ├── renderer.ts # ChartRenderer class — init, draw, resize, destroy
 │   │   └── index.ts
 │   ├── components/     # Svelte UI components
-│   │   ├── ChartCanvas.svelte  # Thin wrapper that mounts ChartRenderer onto a <canvas>
-│   │   └── Sidebar.svelte      # HTML sidebar for birth data display & future data entry
+│   │   ├── BirthDataForm.svelte  # Birth data entry form (initial view)
+│   │   ├── ChartCanvas.svelte    # Thin wrapper that mounts ChartRenderer onto a <canvas>
+│   │   └── ReadingPanel.svelte   # Chart data, planets, aspects, interpretations
 │   └── models/         # Shared data models / types
 │       ├── zodiac.ts   # Static zodiac sign definitions
 │       ├── reading.ts  # NatalChart, PlanetPlacement, Aspect, etc.
 │       └── index.ts
-├── App.svelte          # App shell — sidebar + canvas layout
+├── App.svelte          # App shell — form-first flow, then chart + reading
 ├── main.ts             # Entry point
 └── app.css             # Global reset / base styles
 ```

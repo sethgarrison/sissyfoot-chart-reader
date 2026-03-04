@@ -32,6 +32,18 @@ export interface HouseCusp {
 }
 
 /**
+ * Lunar node position — North Node or South Node.
+ * Nodes are not planets; they have no retrograde or speed.
+ */
+export interface LunarNodePosition {
+  node: string; // "North Node" | "South Node"
+  sign: string;
+  house: number;
+  degrees: number;
+  minutes: number;
+}
+
+/**
  * Birth data used to compute a natal chart.
  */
 export interface BirthData {
@@ -63,6 +75,7 @@ export interface ChartInterpretations {
 export interface NatalChart {
   birthData: BirthData;
   planets: PlanetPlacement[];
+  lunarNodes?: LunarNodePosition[];
   houses: HouseCusp[];
   aspects: Aspect[];
   ascendant: { sign: string; degrees: number; minutes: number };
@@ -96,6 +109,14 @@ export interface ChartApiResponse {
     house: number;
     retrograde: boolean;
     speed: number;
+  }>;
+  lunar_nodes?: Array<{
+    node: string;
+    sign: string;
+    sign_num: number;
+    degree: number;
+    abs_degree: number;
+    house: number;
   }>;
   houses: Array<{
     number: number;
@@ -175,12 +196,24 @@ export function chartFromApiResponse(api: ChartApiResponse): NatalChart {
       orb: Math.round(a.orbit * 10) / 10,
     }));
 
+  const lunarNodes: LunarNodePosition[] = (api.lunar_nodes ?? []).map((n) => {
+    const { degrees, minutes } = degToDegMin(n.degree);
+    return {
+      node: n.node,
+      sign: n.sign,
+      house: n.house,
+      degrees,
+      minutes,
+    };
+  });
+
   const house1 = api.houses.find((h) => h.number === 1);
   const house10 = api.houses.find((h) => h.number === 10);
 
   return {
     birthData,
     planets,
+    lunarNodes: lunarNodes.length > 0 ? lunarNodes : undefined,
     houses,
     aspects,
     ascendant: house1

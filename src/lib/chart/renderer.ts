@@ -130,6 +130,7 @@ export class ChartRenderer {
     if (this.chart) {
       this.drawAngleMarkers(this.chart);
       this.drawPlanetPlacements(this.chart);
+      this.drawLunarNodePlacements(this.chart);
       this.drawAspectLines(this.chart);
     }
   }
@@ -459,6 +460,75 @@ export class ChartRenderer {
     }
   }
 
+  private drawLunarNodePlacements(chart: NatalChart): void {
+    const nodes = chart.lunarNodes;
+    if (!nodes || nodes.length === 0) return;
+
+    const { centerX: cx, centerY: cy, outerRadius: r } = this;
+    const nodeRadius = r * 0.45;
+    const hitRadius = Math.max(14, r * 0.08);
+    const planetsTheme = this.theme.planets;
+
+    const style = new TextStyle({
+      fontFamily: "monospace",
+      fontSize: Math.max(11, r * 0.06),
+      fill: planetsTheme.default,
+    });
+
+    const tooltipStyle = new TextStyle({
+      fontFamily: "sans-serif",
+      fontSize: Math.max(12, r * 0.055),
+      fill: planetsTheme.tooltip,
+    });
+
+    for (const n of nodes) {
+      const totalDeg = this.signTotalDegrees(n.sign, n.degrees, n.minutes);
+      const angle = this.eclipticToAngle(totalDeg);
+      const tx = cx + Math.cos(angle) * nodeRadius;
+      const ty = cy + Math.sin(angle) * nodeRadius;
+
+      const container = new Container();
+      container.x = tx;
+      container.y = ty;
+      container.eventMode = "static";
+      container.cursor = "pointer";
+      container.hitArea = new Circle(0, 0, hitRadius);
+
+      const label = new Text({
+        text: this.lunarNodeGlyph(n.node),
+        style: new TextStyle({ ...style }),
+      });
+      label.anchor.set(0.5);
+      label.x = 0;
+      label.y = 0;
+      container.addChild(label);
+
+      let tooltip: Text | null = null;
+      container.on("pointerover", () => {
+        label.style.fill = planetsTheme.hover;
+        label.scale.set(1.2);
+        const detail = `${n.node} ${n.sign} ${n.degrees}°${String(n.minutes).padStart(2, "0")}' · House ${n.house}`;
+        tooltip = new Text({ text: detail, style: tooltipStyle });
+        tooltip.anchor.set(0.5, 1);
+        tooltip.x = 0;
+        tooltip.y = -hitRadius - 4;
+        tooltip.zIndex = 100;
+        container.addChild(tooltip);
+      });
+      container.on("pointerout", () => {
+        label.style.fill = planetsTheme.default;
+        label.scale.set(1);
+        if (tooltip) {
+          container.removeChild(tooltip);
+          tooltip.destroy();
+          tooltip = null;
+        }
+      });
+
+      this.chartContainer.addChild(container);
+    }
+  }
+
   private drawAspectLines(chart: NatalChart): void {
     const { centerX: cx, centerY: cy, outerRadius: r } = this;
     const aspectRadius = r * 0.45;
@@ -505,5 +575,13 @@ export class ChartRenderer {
       Pluto: "\u2647",
     };
     return glyphs[planet] ?? planet.slice(0, 2);
+  }
+
+  private lunarNodeGlyph(node: string): string {
+    const glyphs: Record<string, string> = {
+      "North Node": "\u260A", // ☊ Dragon's Head
+      "South Node": "\u260B", // ☋ Dragon's Tail
+    };
+    return glyphs[node] ?? node.slice(0, 2);
   }
 }

@@ -1,43 +1,36 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import ChartCanvas from "./lib/components/ChartCanvas.svelte";
-  import Sidebar from "./lib/components/Sidebar.svelte";
-  import { fetchChart } from "./lib/api/chartApi";
+  import BirthDataForm from "./lib/components/BirthDataForm.svelte";
+  import ReadingPanel from "./lib/components/ReadingPanel.svelte";
   import type { NatalChart } from "./lib/models";
 
   let chart = $state<NatalChart | null>(null);
-
-  onMount(() => {
-    fetchChart({
-      year: 1970,
-      month: 8,
-      day: 8,
-      hour: 17,
-      min: 55,
-      city: "Bakersfield,CA",
-      nation: "US",
-    })
-      .then((c) => (chart = c))
-      .catch(() => {});
-  });
 </script>
 
-<div class="app-shell">
-  <Sidebar bind:chart />
-  <main class="main-content">
-    <ChartCanvas {chart} />
-  </main>
+<div class="app-shell" class:result-view={!!chart}>
+  {#if chart}
+    <main class="main-content">
+      <ChartCanvas {chart} />
+    </main>
+    <ReadingPanel {chart} onNewChart={() => (chart = null)} />
+  {:else}
+    <BirthDataForm onChartFetched={(c) => (chart = c)} />
+  {/if}
 </div>
 
 <style>
   .app-shell {
-    display: flex;
-    height: 100vh;
+    min-height: 100vh;
     width: 100vw;
     overflow: hidden;
     background: #0d1117;
     color: #c9d1d9;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+
+  .app-shell.result-view {
+    display: flex;
+    height: 100vh;
   }
 
   .main-content {

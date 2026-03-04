@@ -8,6 +8,7 @@ import { chartFromApiResponse, type ChartApiResponse, type NatalChart } from "..
 const API_BASE = "https://sissyfoot-astrological-api.onrender.com";
 
 export interface ChartApiParams {
+  name?: string;
   year: number;
   month: number;
   day: number;
@@ -30,10 +31,48 @@ export async function fetchChart(params: ChartApiParams): Promise<NatalChart> {
     city: params.city,
     nation: params.nation,
   });
+  if (params.name?.trim()) {
+    search.set("name", params.name.trim());
+  }
   const res = await fetch(`${API_BASE}/chart?${search}`);
   if (!res.ok) {
     const text = await res.text();
     throw new Error(`Chart API error ${res.status}: ${text}`);
+  }
+  const api: ChartApiResponse = await res.json();
+  return chartFromApiResponse(api);
+}
+
+/** Summary of a saved reading from the readings list. */
+export interface ReadingSummary {
+  identifier: string;
+  name: string;
+  birth_datetime: string;
+  created_at: string;
+}
+
+/**
+ * Fetch the list of saved readings.
+ */
+export async function fetchReadings(): Promise<ReadingSummary[]> {
+  const res = await fetch(`${API_BASE}/readings`);
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Readings API error ${res.status}: ${text}`);
+  }
+  return res.json();
+}
+
+/**
+ * Fetch a single reading by its identifier.
+ * Identifier format: name__birthdatetime__lat__lng (e.g. Jane__1990-06-15T12:00__40.7128__-74.006)
+ */
+export async function fetchReadingById(identifier: string): Promise<NatalChart> {
+  const encoded = encodeURIComponent(identifier);
+  const res = await fetch(`${API_BASE}/readings/${encoded}`);
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Readings API error ${res.status}: ${text}`);
   }
   const api: ChartApiResponse = await res.json();
   return chartFromApiResponse(api);

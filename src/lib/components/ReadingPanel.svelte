@@ -1,118 +1,67 @@
 <script lang="ts">
-  import { fetchChart, type ChartApiParams } from "../api/chartApi";
   import type { NatalChart } from "../models";
 
   interface Props {
-    chart?: NatalChart | null;
+    chart: NatalChart;
+    onNewChart: () => void;
   }
-  let { chart = $bindable(null) }: Props = $props();
-
-  let form = $state<ChartApiParams>({
-    year: 1970,
-    month: 8,
-    day: 8,
-    hour: 17,
-    min: 55,
-    city: "Bakersfield,CA",
-    nation: "US",
-  });
-  let loading = $state(false);
-  let error = $state<string | null>(null);
-
-  async function handleSubmit() {
-    loading = true;
-    error = null;
-    try {
-      chart = await fetchChart(form);
-    } catch (e) {
-      error = e instanceof Error ? e.message : "Failed to fetch chart";
-    } finally {
-      loading = false;
-    }
-  }
+  let { chart, onNewChart }: Props = $props();
 </script>
 
-<aside class="sidebar">
-  <header class="sidebar-header">
+<aside class="reading-panel">
+  <header class="reading-header">
     <h1>Astro Chart</h1>
-    <p class="subtitle">natal chart explorer</p>
+    <button class="new-chart-btn" onclick={onNewChart}>New Chart</button>
   </header>
 
-  <section class="sidebar-section">
-    <h2>Birth Data</h2>
-    <form class="chart-form" onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
-      <label>
-        <span>Date</span>
-        <div class="date-row">
-          <input type="number" bind:value={form.month} min="1" max="12" placeholder="MM" />
-          <input type="number" bind:value={form.day} min="1" max="31" placeholder="DD" />
-          <input type="number" bind:value={form.year} min="1900" max="2100" placeholder="YYYY" />
-        </div>
-      </label>
-      <label>
-        <span>Time (local)</span>
-        <div class="date-row">
-          <input type="number" bind:value={form.hour} min="0" max="23" placeholder="HH" />
-          <input type="number" bind:value={form.min} min="0" max="59" placeholder="MM" />
-        </div>
-      </label>
-      <label>
-        <span>City, State</span>
-        <input type="text" bind:value={form.city} placeholder="Laurel,MS" />
-      </label>
-      <label>
-        <span>Country</span>
-        <input type="text" bind:value={form.nation} placeholder="US" />
-      </label>
-      {#if error}
-        <p class="form-error">{error}</p>
-      {/if}
-      <button type="submit" disabled={loading}>
-        {loading ? "Loading…" : "Get Chart"}
-      </button>
-    </form>
-  </section>
-
-  <section class="sidebar-section">
+  <section class="reading-section">
     <h2>Chart Data</h2>
-    {#if chart}
-      <dl class="birth-data">
-        <dt>Name</dt>
-        <dd>{chart.birthData.name}</dd>
-        <dt>Date</dt>
-        <dd>{chart.birthData.date}</dd>
-        <dt>Time</dt>
-        <dd>{chart.birthData.time}</dd>
-        <dt>Location</dt>
-        <dd>{chart.birthData.latitude.toFixed(4)}, {chart.birthData.longitude.toFixed(4)}</dd>
-      </dl>
-    {:else}
-      <p class="placeholder">No chart loaded. Enter birth data to generate a chart.</p>
-    {/if}
+    <dl class="birth-data">
+      <dt>Name</dt>
+      <dd>{chart.birthData.name}</dd>
+      <dt>Date</dt>
+      <dd>{chart.birthData.date}</dd>
+      <dt>Time</dt>
+      <dd>{chart.birthData.time}</dd>
+      <dt>Location</dt>
+      <dd>{chart.birthData.latitude.toFixed(4)}, {chart.birthData.longitude.toFixed(4)}</dd>
+    </dl>
   </section>
 
-  <section class="sidebar-section">
+  <section class="reading-section">
     <h2>Planets</h2>
-    {#if chart}
+    <ul class="planet-list">
+      {#each chart.planets as p}
+        <li>
+          <span class="planet-name">{p.planet}</span>
+          <span class="planet-pos">
+            {p.sign} {p.degrees}&deg;{p.minutes.toString().padStart(2, "0")}'
+            {#if p.retrograde}<span class="retro">R</span>{/if}
+          </span>
+        </li>
+      {/each}
+    </ul>
+  </section>
+
+  {#if chart.lunarNodes && chart.lunarNodes.length > 0}
+    <section class="reading-section">
+      <h2>Lunar Nodes</h2>
       <ul class="planet-list">
-        {#each chart.planets as p}
+        {#each chart.lunarNodes as n}
           <li>
-            <span class="planet-name">{p.planet}</span>
+            <span class="planet-name">{n.node}</span>
             <span class="planet-pos">
-              {p.sign} {p.degrees}&deg;{p.minutes.toString().padStart(2, "0")}'
-              {#if p.retrograde}<span class="retro">R</span>{/if}
+              {n.sign} {n.degrees}&deg;{n.minutes.toString().padStart(2, "0")}' · House {n.house}
             </span>
           </li>
         {/each}
       </ul>
-    {:else}
-      <p class="placeholder">&mdash;</p>
-    {/if}
-  </section>
+    </section>
+  {/if}
 
-  <section class="sidebar-section">
+  <section class="reading-section">
     <h2>Aspects</h2>
-    {#if chart && chart.aspects.length > 0}
+    {#if chart.aspects.length > 0}
       <ul class="aspect-list">
         {#each chart.aspects as a}
           <li>
@@ -127,8 +76,8 @@
     {/if}
   </section>
 
-  {#if chart?.interpretations}
-    <section class="sidebar-section interpretations-section">
+  {#if chart.interpretations}
+    <section class="reading-section interpretations-section">
       <h2>Interpretations</h2>
 
       {#if Object.keys(chart.interpretations.planet_in_sign ?? {}).length > 0}
@@ -191,11 +140,11 @@
 </aside>
 
 <style>
-  .sidebar {
-    width: 300px;
-    min-width: 260px;
+  .reading-panel {
+    width: 340px;
+    min-width: 300px;
     background: #161b22;
-    border-right: 1px solid #30363d;
+    border-left: 1px solid #30363d;
     padding: 1.25rem;
     overflow-y: auto;
     display: flex;
@@ -203,22 +152,36 @@
     gap: 1.25rem;
   }
 
-  .sidebar-header h1 {
+  .reading-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .reading-header h1 {
     margin: 0;
-    font-size: 1.35rem;
+    font-size: 1.2rem;
     color: #e6edf3;
     font-weight: 600;
   }
 
-  .subtitle {
-    margin: 0.15rem 0 0;
+  .new-chart-btn {
+    padding: 0.4rem 0.75rem;
     font-size: 0.8rem;
+    background: transparent;
     color: #8b949e;
-    letter-spacing: 0.05em;
-    text-transform: lowercase;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    cursor: pointer;
   }
 
-  .sidebar-section h2 {
+  .new-chart-btn:hover {
+    color: #c9d1d9;
+    border-color: #484f58;
+  }
+
+  .reading-section h2 {
     margin: 0 0 0.5rem;
     font-size: 0.75rem;
     text-transform: uppercase;
@@ -235,65 +198,10 @@
     font-size: 0.85rem;
   }
 
-  .chart-form {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    font-size: 0.85rem;
-  }
-  .chart-form label {
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-  }
-  .chart-form label span {
-    color: #8b949e;
-    font-size: 0.75rem;
-  }
-  .chart-form input {
-    padding: 0.4rem 0.5rem;
-    background: #0d1117;
-    border: 1px solid #30363d;
-    border-radius: 4px;
-    color: #c9d1d9;
-  }
-  .chart-form input:focus {
-    outline: none;
-    border-color: #58a6ff;
-  }
-  .date-row {
-    display: flex;
-    gap: 0.25rem;
-  }
-  .date-row input {
-    flex: 1;
-  }
-  .chart-form button {
-    margin-top: 0.25rem;
-    padding: 0.5rem;
-    background: #238636;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 500;
-  }
-  .chart-form button:hover:not(:disabled) {
-    background: #2ea043;
-  }
-  .chart-form button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-  .form-error {
-    color: #f85149;
-    font-size: 0.8rem;
-    margin: 0;
-  }
-
   .birth-data dt {
     color: #8b949e;
   }
+
   .birth-data dd {
     margin: 0;
     color: #c9d1d9;
@@ -325,10 +233,12 @@
   .planet-name {
     font-weight: 500;
   }
+
   .planet-pos {
     color: #8b949e;
     font-family: monospace;
   }
+
   .retro {
     color: #f85149;
     font-weight: 700;
@@ -341,6 +251,7 @@
     text-transform: capitalize;
     margin: 0 0.5em;
   }
+
   .aspect-orb {
     color: #484f58;
     font-family: monospace;
@@ -349,6 +260,7 @@
   .interpretations-section {
     margin-top: 0.5rem;
   }
+
   .interpretations-sub {
     margin: 1rem 0 0.4rem;
     font-size: 0.7rem;
@@ -356,27 +268,33 @@
     letter-spacing: 0.06em;
     color: #8b949e;
   }
+
   .interpretations-sub:first-of-type {
     margin-top: 0.5rem;
   }
+
   .interpretations-list {
     list-style: none;
     padding: 0;
     margin: 0;
     font-size: 0.82rem;
   }
+
   .interpretation-item {
     padding: 0.35rem 0;
     border-bottom: 1px solid #21262d;
   }
+
   .interpretation-item:last-child {
     border-bottom: none;
   }
+
   .interpretation-label {
     color: #58a6ff;
     font-weight: 500;
     display: block;
   }
+
   .interpretation-text {
     margin: 0.2rem 0 0;
     color: #c9d1d9;
