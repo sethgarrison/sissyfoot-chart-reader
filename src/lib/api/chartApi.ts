@@ -16,23 +16,34 @@ export interface ChartApiParams {
   min: number;
   city: string;  // "City,State" e.g. "Laurel,MS"
   nation: string; // "US"
+  /** IANA timezone e.g. "America/Chicago" — required for accurate chart vs astro.com */
+  timezone?: string;
+  /** House system: "whole_sign" (default) or "placidus" */
+  house_system?: "whole_sign" | "placidus";
 }
 
 /**
  * Fetch a natal chart from the API.
+ * Uses `time` (HH:MM) for birth time—overrides hour/minute and ensures minutes are preserved.
+ * Sends `tz_str` for timezone per API spec.
  */
 export async function fetchChart(params: ChartApiParams): Promise<NatalChart> {
   const search = new URLSearchParams({
     year: String(params.year),
     month: String(params.month),
     day: String(params.day),
-    hour: String(params.hour),
-    min: String(params.min),
+    time: `${String(params.hour).padStart(2, "0")}:${String(params.min).padStart(2, "0")}`,
     city: params.city,
     nation: params.nation,
   });
   if (params.name?.trim()) {
     search.set("name", params.name.trim());
+  }
+  if (params.house_system) {
+    search.set("house_system", params.house_system);
+  }
+  if (params.timezone?.trim()) {
+    search.set("tz_str", params.timezone.trim());
   }
   const res = await fetch(`${API_BASE}/chart?${search}`);
   if (!res.ok) {

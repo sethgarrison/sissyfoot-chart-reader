@@ -151,7 +151,7 @@ function degToDegMin(deg: number): { degrees: number; minutes: number } {
   return { degrees: d, minutes: m };
 }
 
-/** Map API response to our NatalChart format. Filters to supported planets/aspects. */
+/** Map API response to our NatalChart format. House system is determined by the API. */
 export function chartFromApiResponse(api: ChartApiResponse): NatalChart {
   const [datePart, timePart] = api.birth_datetime.split("T");
   const time = timePart?.slice(0, 5) ?? "00:00";
@@ -207,8 +207,8 @@ export function chartFromApiResponse(api: ChartApiResponse): NatalChart {
     };
   });
 
-  const house1 = api.houses.find((h) => h.number === 1);
-  const house10 = api.houses.find((h) => h.number === 10);
+  const house1 = api.houses?.find((h) => h.number === 1);
+  const house10 = api.houses?.find((h) => h.number === 10);
 
   return {
     birthData,

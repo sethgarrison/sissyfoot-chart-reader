@@ -10,19 +10,21 @@
   import type { NatalChart } from "../models";
 
   interface Props {
-    onChartFetched: (chart: NatalChart) => void;
+    onChartFetched: (chart: NatalChart, requestParams?: ChartApiParams) => void;
   }
   let { onChartFetched }: Props = $props();
 
   let form = $state<ChartApiParams>({
-    name: "",
-    year: 1970,
-    month: 8,
-    day: 8,
-    hour: 17,
-    min: 55,
-    city: "Bakersfield,CA",
+    name: "Seth",
+    year: 1982,
+    month: 2,
+    day: 10,
+    hour: 11,
+    min: 36,
+    city: "Laurel,MS",
     nation: "US",
+    timezone: "America/Chicago",
+    house_system: "placidus",
   });
   let loading = $state(false);
   let error = $state<string | null>(null);
@@ -44,7 +46,7 @@
     error = null;
     try {
       const c = await fetchChart(form);
-      onChartFetched(c);
+      onChartFetched(c, form);
     } catch (e) {
       error = e instanceof Error ? e.message : "Failed to fetch chart";
     } finally {
@@ -104,8 +106,41 @@
       <input type="text" bind:value={form.city} placeholder="Laurel,MS" />
     </label>
     <label>
+      <span>Timezone</span>
+      <input type="text" bind:value={form.timezone} placeholder="America/Chicago" list="tz-suggestions" />
+      <datalist id="tz-suggestions">
+        <option value="America/New_York"></option>
+        <option value="America/Chicago"></option>
+        <option value="America/Denver"></option>
+        <option value="America/Los_Angeles"></option>
+        <option value="America/Phoenix"></option>
+        <option value="UTC"></option>
+      </datalist>
+    </label>
+    <label>
       <span>Country</span>
       <input type="text" bind:value={form.nation} placeholder="US" />
+    </label>
+    <label>
+      <span>House System</span>
+      <div class="house-system-toggle">
+        <button
+          type="button"
+          class="toggle-option"
+          class:active={form.house_system === "whole_sign"}
+          onclick={() => (form = { ...form, house_system: "whole_sign" })}
+        >
+          Whole Sign
+        </button>
+        <button
+          type="button"
+          class="toggle-option"
+          class:active={form.house_system === "placidus"}
+          onclick={() => (form = { ...form, house_system: "placidus" })}
+        >
+          Placidus
+        </button>
+      </div>
     </label>
     {#if error}
       <p class="form-error">{error}</p>
@@ -218,7 +253,34 @@
     flex: 1;
   }
 
-  .chart-form button {
+  .house-system-toggle {
+    display: flex;
+    gap: 0;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #30363d;
+  }
+
+  .toggle-option {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+    background: #0d1117;
+    color: #8b949e;
+    border: none;
+    cursor: pointer;
+  }
+
+  .toggle-option:hover {
+    color: #c9d1d9;
+  }
+
+  .toggle-option.active {
+    background: #238636;
+    color: white;
+  }
+
+  .chart-form button[type="submit"] {
     margin-top: 0.5rem;
     padding: 0.65rem 1rem;
     background: #238636;
@@ -230,11 +292,11 @@
     font-size: 1rem;
   }
 
-  .chart-form button:hover:not(:disabled) {
+  .chart-form button[type="submit"]:hover:not(:disabled) {
     background: #2ea043;
   }
 
-  .chart-form button:disabled {
+  .chart-form button[type="submit"]:disabled {
     opacity: 0.6;
     cursor: not-allowed;
   }

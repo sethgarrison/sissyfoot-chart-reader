@@ -78,58 +78,45 @@ export const PLANET_NAMES = [
   "Pluto",
 ] as const;
 
-/** Default theme: GitHub-dark inspired palette */
+/** Default theme: Traditional white chart with black lines */
 export const DEFAULT_CHART_THEME: ChartTheme = {
   chart: {
-    background: 0x0d1117,
-    wheelStroke: 0x58a6ff,
-    wheelStrokeMuted: 0x30363d,
-    centerFill: 0x58a6ff,
-    centerStroke: 0x58a6ff,
-    houseLineStroke: 0x30363d,
-    houseFillLight: 0x21262d,
-    houseFillDark: 0x161b22,
-    houseFillAlpha: 0.85,
-    labelMuted: 0xc9d1d9,
+    background: 0xffffff,
+    wheelStroke: 0x000000,
+    wheelStrokeMuted: 0x000000,
+    centerFill: 0x000000,
+    centerStroke: 0x000000,
+    houseLineStroke: 0x000000,
+    houseFillLight: 0xf5f5f5,
+    houseFillDark: 0xffffff,
+    houseFillAlpha: 0.9,
+    labelMuted: 0x000000,
   },
   signs: {
-    fire: 0xe74c3c,
-    earth: 0x27ae60,
-    air: 0xf1c40f,
-    water: 0x3498db,
-    bySign: {
-      Aries: 0xdc2626,   // Fiery red
-      Taurus: 0x1e3a5f,  // Navy blue
-      Gemini: 0xfef08a,  // Light yellow
-      Cancer: 0xf5f5dc,  // Beige
-      Leo: 0xb22222,     // Brick red
-      Virgo: 0x90a955,   // Earthy green (light)
-      Libra: 0xdb7093,   // Pink
-      Scorpio: 0x4a3728, // Deep brown
-      Sagittarius: 0x7cfc00,   // Lime green
-      Capricorn: 0x36454f,    // Graphite black
-      Aquarius: 0x40e0d0,     // Turquoise
-      Pisces: 0x00bcd4,       // Cyan
-    },
-    segmentFillAlpha: 0.4,
+    fire: 0x000000,
+    earth: 0x000000,
+    air: 0x000000,
+    water: 0x000000,
+    bySign: {},
+    segmentFillAlpha: 0,
   },
   angles: {
-    tickStroke: 0x58a6ff,
-    labelFill: 0x8b949e,
+    tickStroke: 0x000000,
+    labelFill: 0x000000,
   },
   planets: {
-    default: 0xe6edf3,
-    retrograde: 0xf85149,
-    hover: 0x58a6ff,
-    tooltip: 0xe6edf3,
+    default: 0x000000,
+    retrograde: 0xb91c1c,
+    hover: 0x374151,
+    tooltip: 0x000000,
   },
   aspects: {
-    conjunction: 0xf0e68c,
-    opposition: 0xe74c3c,
-    trine: 0x2ecc71,
-    square: 0xe67e22,
-    sextile: 0x3498db,
-    default: 0x484f58,
+    conjunction: 0x6b7280,
+    opposition: 0x6b7280,
+    trine: 0x6b7280,
+    square: 0x6b7280,
+    sextile: 0x6b7280,
+    default: 0x6b7280,
   },
 };
 
@@ -149,7 +136,12 @@ export function mergeChartThemeOver(
     Object.assign(merged.chart, partial.chart);
   }
   if (partial.signs) {
-    Object.assign(merged.signs, partial.signs);
+    const { bySign: partialBySign, ...partialRest } = partial.signs;
+    Object.assign(merged.signs, partialRest);
+    // Deep-merge bySign so partial overrides don't wipe other sign colors
+    if (partialBySign) {
+      merged.signs.bySign = { ...(merged.signs.bySign ?? {}), ...partialBySign };
+    }
   }
   if (partial.angles) {
     Object.assign(merged.angles, partial.angles);

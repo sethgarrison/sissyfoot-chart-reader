@@ -1,6 +1,6 @@
 import { Application, Graphics, Text, TextStyle, Container, Circle } from "pixi.js";
 import { ZODIAC_SIGNS } from "../models/zodiac";
-import type { NatalChart } from "../models/reading";
+import type { NatalChart, PlanetPlacement } from "../models/reading";
 import {
   DEFAULT_CHART_THEME,
   mergeChartTheme,
@@ -15,11 +15,16 @@ export interface ChartRendererOptions {
   height: number;
   /** Optional theme overrides. Merged onto DEFAULT_CHART_THEME. */
   theme?: DeepPartial<ChartTheme>;
+  /** Called when a planet is clicked; chart will zoom to that planet. */
+  onPlanetClick?: (planet: PlanetPlacement) => void;
 }
 
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 5;
 const ZOOM_STEP = 0.15;
+
+const INTRO_SPIN_DURATION_MS = 7000; // Slow, gentle
+const INTRO_SPIN_REVOLUTIONS = 1.5; // One to two rotations before settling
 
 /**
  * Manages a PixiJS Application that draws an astrological wheel chart.
@@ -36,6 +41,8 @@ export class ChartRenderer {
   private zoomLevel = 1;
   private panX = 0;
   private panY = 0;
+  private introTicker: (() => void) | null = null;
+  private onPlanetClick: ((planet: PlanetPlacement) => void) | null = null;
 
   constructor() {
     this.app = new Application();
@@ -45,6 +52,7 @@ export class ChartRenderer {
 
   async init(opts: ChartRendererOptions): Promise<void> {
     this.theme = opts.theme ? mergeChartTheme(opts.theme) : DEFAULT_CHART_THEME;
+    this.onPlanetClick = opts.onPlanetClick ?? null;
 
     await this.app.init({
       canvas: opts.canvas,
@@ -66,9 +74,17 @@ export class ChartRenderer {
   }
 
   /** Render a full natal chart onto the wheel. */
-  setChart(chart: NatalChart): void {
+  setChart(
+    chart: NatalChart,
+    options?: { playIntroAnimation?: boolean; onPlanetClick?: (planet: PlanetPlacement) => void }
+  ): void {
+    const wasEmpty = !this.chart;
+    if (options?.onPlanetClick !== undefined) this.onPlanetClick = options.onPlanetClick ?? null;
     this.chart = chart;
     this.redraw();
+    if (wasEmpty && chart && options?.playIntroAnimation !== false) {
+      this.playIntroSpin();
+    }
   }
 
   /** Resize the renderer when the container changes size. */
@@ -104,10 +120,27 @@ export class ChartRenderer {
     this.applyZoomPan();
   }
 
+  /** Zoom and pan to focus on a specific planet. */
+  focusOnPlanet(planet: PlanetPlacement): void {
+    if (!this.chart) return;
+    const planetRadius = this.outerRadius * 0.45;
+    const totalDeg = this.signTotalDegrees(planet.sign, planet.degrees, planet.minutes);
+    const angle = this.eclipticToAngle(totalDeg);
+    this.panX = -Math.cos(angle) * planetRadius;
+    this.panY = -Math.sin(angle) * planetRadius;
+    this.zoomLevel = 2.5;
+    this.applyZoomPan();
+  }
+
   private applyZoomPan(): void {
     this.chartContainer.pivot.set(this.centerX, this.centerY);
     this.chartContainer.position.set(this.centerX + this.panX, this.centerY + this.panY);
     this.chartContainer.scale.set(this.zoomLevel);
+  }
+
+  /** Update the planet click callback. Call this when the Svelte callback changes. */
+  setOnPlanetClick(cb: ((planet: PlanetPlacement) => void) | null | undefined): void {
+    this.onPlanetClick = cb ?? null;
   }
 
   /** Update the theme and redraw. Use partial overrides; merged onto current theme. */
@@ -121,7 +154,35 @@ export class ChartRenderer {
 
   /** Tear down the PixiJS application. */
   destroy(): void {
+    if (this.introTicker) {
+      this.app.ticker.remove(this.introTicker);
+      this.introTicker = null;
+    }
     this.app.destroy(true, { children: true });
+  }
+
+  /** Play the introductory spin animation when the chart first loads. */
+  private playIntroSpin(): void {
+    const startRotation = INTRO_SPIN_REVOLUTIONS * Math.PI * 2;
+    this.chartContainer.rotation = startRotation;
+
+    const startTime = performance.now();
+    const tick = () => {
+      const elapsed = performance.now() - startTime;
+      const progress = Math.min(elapsed / INTRO_SPIN_DURATION_MS, 1);
+      // Ease-out quint: very gentle deceleration for hypnotic feel
+      const eased = 1 - Math.pow(1 - progress, 5);
+      this.chartContainer.rotation = startRotation * (1 - eased);
+
+      if (progress >= 1) {
+        this.app.ticker.remove(tick);
+        this.introTicker = null;
+        this.chartContainer.rotation = 0;
+      }
+    };
+
+    this.introTicker = tick;
+    this.app.ticker.add(tick);
   }
 
   private redraw(): void {
@@ -140,27 +201,9 @@ export class ChartRenderer {
     const innerRadius = r * 0.72;
     const houseRingRadius = r * 0.55;
     const t = this.theme.chart;
-    const signColors = this.theme.signs;
+    const black = 0x000000;
 
-    // Zodiac segments (fill each 30° wedge with sign color)
-    const segmentFill = new Graphics();
-    const signColor = (sign: { name: string; element: string }) =>
-      signColors.bySign?.[sign.name] ?? signColors[sign.element];
-
-    for (const sign of ZODIAC_SIGNS) {
-      const startAngle = this.eclipticToAngle(sign.degreesStart);
-      const endAngle = this.eclipticToAngle(sign.degreesEnd);
-      const color = signColor(sign);
-
-      segmentFill.moveTo(cx + Math.cos(startAngle) * innerRadius, cy + Math.sin(startAngle) * innerRadius);
-      segmentFill.arc(cx, cy, innerRadius, startAngle, endAngle, false);
-      segmentFill.lineTo(cx + Math.cos(endAngle) * r, cy + Math.sin(endAngle) * r);
-      segmentFill.arc(cx, cy, r, endAngle, startAngle, true);
-      segmentFill.closePath();
-      segmentFill.fill({ color, alpha: signColors.segmentFillAlpha });
-    }
-    this.chartContainer.addChild(segmentFill);
-
+    // 1. Inner circle: house segments with black dividing lines
     if (this.chart && this.chart.houses.length >= 12) {
       this.drawHouseSegments();
     }
@@ -175,30 +218,50 @@ export class ChartRenderer {
     g.circle(cx, cy, houseRingRadius);
     g.stroke({ width: 1, color: t.wheelStrokeMuted });
 
-    g.circle(cx, cy, r * 0.08);
-    g.fill({ color: t.centerFill, alpha: 0.15 });
+    g.circle(cx, cy, r * 0.06);
+    g.fill({ color: t.centerFill, alpha: 1 });
     g.stroke({ width: 1, color: t.centerStroke });
-
-    const houseCusps = this.getHouseCuspAngles();
-    for (let i = 0; i < houseCusps.length; i++) {
-      const angle = houseCusps[i];
-      const x1 = cx + Math.cos(angle) * innerRadius;
-      const y1 = cy + Math.sin(angle) * innerRadius;
-      const x2 = cx + Math.cos(angle) * r;
-      const y2 = cy + Math.sin(angle) * r;
-      const lineG = new Graphics();
-      lineG.moveTo(x1, y1);
-      lineG.lineTo(x2, y2);
-      lineG.stroke({ width: 1.5, color: t.houseLineStroke });
-      this.chartContainer.addChild(lineG);
-    }
 
     this.chartContainer.addChild(g);
 
+    // 3. House cusp lines: center to outer edge (black) — clearly delineate houses
+    const houseCusps = this.getHouseCuspAngles();
+    const centerR = r * 0.06;
+    for (let i = 0; i < houseCusps.length; i++) {
+      const angle = houseCusps[i];
+      const lineG = new Graphics();
+      lineG.moveTo(cx + Math.cos(angle) * centerR, cy + Math.sin(angle) * centerR);
+      lineG.lineTo(cx + Math.cos(angle) * r, cy + Math.sin(angle) * r);
+      lineG.stroke({ width: 1.5, color: black });
+      this.chartContainer.addChild(lineG);
+    }
+
+    // 4. Zodiac outer ring: full divisions between signs (black radial lines)
+    for (const sign of ZODIAC_SIGNS) {
+      const angle = this.eclipticToAngle(sign.degreesStart);
+      const div = new Graphics();
+      div.moveTo(cx + Math.cos(angle) * innerRadius, cy + Math.sin(angle) * innerRadius);
+      div.lineTo(cx + Math.cos(angle) * r, cy + Math.sin(angle) * r);
+      div.stroke({ width: 1.5, color: black });
+      this.chartContainer.addChild(div);
+    }
+
+    // 5. Zodiac tick marks: outward-pointing at each sign boundary
+    const tickLength = r * 0.04;
+    for (const sign of ZODIAC_SIGNS) {
+      const angle = this.eclipticToAngle(sign.degreesStart);
+      const tick = new Graphics();
+      tick.moveTo(cx + Math.cos(angle) * r, cy + Math.sin(angle) * r);
+      tick.lineTo(cx + Math.cos(angle) * (r + tickLength), cy + Math.sin(angle) * (r + tickLength));
+      tick.stroke({ width: 1.5, color: black });
+      this.chartContainer.addChild(tick);
+    }
+
+    // 6. Sign labels (symbols) in the zodiac ring
     const labelStyle = new TextStyle({
       fontFamily: "serif",
       fontSize: Math.max(14, r * 0.08),
-      fill: t.labelMuted,
+      fill: black,
     });
 
     const signHitRadius = Math.max(14, r * 0.08);
@@ -225,7 +288,7 @@ export class ChartRenderer {
         text: sign.symbol,
         style: new TextStyle({
           ...labelStyle,
-          fill: signColors[sign.element],
+          fill: black,
           fontSize: Math.max(16, r * 0.1),
         }),
       });
@@ -235,7 +298,6 @@ export class ChartRenderer {
       container.addChild(text);
 
       let tooltip: Text | null = null;
-      const baseFill = signColor(sign);
       container.on("pointerover", () => {
         text.style.fill = this.theme.planets.hover;
         text.scale.set(1.2);
@@ -247,7 +309,7 @@ export class ChartRenderer {
         container.addChild(tooltip);
       });
       container.on("pointerout", () => {
-        text.style.fill = baseFill;
+        text.style.fill = black;
         text.scale.set(1);
         if (tooltip) {
           container.removeChild(tooltip);
@@ -308,13 +370,13 @@ export class ChartRenderer {
 
   /**
    * Convert ecliptic longitude (0–360°) to canvas angle in radians.
-   * When orientation is "angles", rotates so MC is at top.
+   * House 1 (Ascendant) is at 9 o'clock (left); houses proceed clockwise.
    */
   private eclipticToAngle(eclipticDeg: number): number {
-    const mcDeg = this.chart
-      ? this.signTotalDegrees(this.chart.midheaven.sign, this.chart.midheaven.degrees, this.chart.midheaven.minutes)
+    const ascDeg = this.chart
+      ? this.signTotalDegrees(this.chart.ascendant.sign, this.chart.ascendant.degrees, this.chart.ascendant.minutes)
       : 0;
-    const deg = this.chart ? eclipticDeg - mcDeg - 90 : eclipticDeg - 90;
+    const deg = this.chart ? 180 - (eclipticDeg - ascDeg) : 180 - eclipticDeg;
     return (deg * Math.PI) / 180;
   }
 
@@ -322,6 +384,14 @@ export class ChartRenderer {
     const signObj = ZODIAC_SIGNS.find((s) => s.name === sign);
     if (!signObj) return 0;
     return signObj.degreesStart + degrees + minutes / 60;
+  }
+
+  /** Midpoint of arc from startAngle to endAngle, taking the shorter path. Handles wrap-around. */
+  private arcMidAngle(startAngle: number, endAngle: number): number {
+    let delta = endAngle - startAngle;
+    if (delta > Math.PI) delta -= 2 * Math.PI;
+    if (delta < -Math.PI) delta += 2 * Math.PI;
+    return startAngle + delta / 2;
   }
 
   /** Get house cusp angles in radians (canvas space). Uses actual cusps when chart has houses. */
@@ -332,11 +402,11 @@ export class ChartRenderer {
         this.eclipticToAngle(this.signTotalDegrees(c.sign, c.degrees, c.minutes))
       );
     }
-    const mcDeg = this.chart
-      ? this.signTotalDegrees(this.chart.midheaven.sign, this.chart.midheaven.degrees, this.chart.midheaven.minutes)
+    const ascDeg = this.chart
+      ? this.signTotalDegrees(this.chart.ascendant.sign, this.chart.ascendant.degrees, this.chart.ascendant.minutes)
       : 0;
     return Array.from({ length: 12 }, (_, i) =>
-      this.eclipticToAngle((mcDeg + i * 30) % 360)
+      this.eclipticToAngle((ascDeg + i * 30) % 360)
     );
   }
 
@@ -377,7 +447,7 @@ export class ChartRenderer {
     for (let i = 0; i < 12; i++) {
       const startAngle = cuspAngles[i];
       const endAngle = cuspAngles[(i + 1) % 12];
-      const midAngle = (startAngle + endAngle) / 2;
+      const midAngle = this.arcMidAngle(startAngle, endAngle);
       const labelX = cx + Math.cos(midAngle) * labelRadius;
       const labelY = cy + Math.sin(midAngle) * labelRadius;
       const houseNum = new Text({
@@ -454,6 +524,12 @@ export class ChartRenderer {
           tooltip.destroy();
           tooltip = null;
         }
+      });
+
+      container.on("pointerdown", (e) => {
+        e.stopPropagation();
+        this.onPlanetClick?.(p);
+        this.focusOnPlanet(p);
       });
 
       this.chartContainer.addChild(container);

@@ -1,23 +1,26 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { ChartRenderer } from "../chart";
-  import type { NatalChart } from "../models";
+  import type { NatalChart, PlanetPlacement } from "../models";
 
   let canvasEl: HTMLCanvasElement;
   let wrapperEl: HTMLDivElement;
-  let renderer: ChartRenderer;
+  let renderer = $state<ChartRenderer | undefined>(undefined);
 
   interface Props {
     chart?: NatalChart | null;
+    onPlanetSelect?: (planet: PlanetPlacement) => void;
   }
-  let { chart = null }: Props = $props();
+  let { chart = null, onPlanetSelect }: Props = $props();
 
   $effect(() => {
-    if (chart) renderer?.setChart(chart);
+    if (chart && renderer) {
+      renderer.setChart(chart, { onPlanetClick: onPlanetSelect ?? undefined });
+    }
   });
 
   onMount(() => {
-    renderer = new ChartRenderer();
+    const r = new ChartRenderer();
     let mounted = true;
 
     const w = wrapperEl.clientWidth;
@@ -27,17 +30,22 @@
       for (const entry of entries) {
         const { width, height } = entry.contentRect;
         if (width > 0 && height > 0) {
-          renderer.resize(width, height);
-          if (chart) renderer.setChart(chart);
+          r.resize(width, height);
+          if (chart) r.setChart(chart, { onPlanetClick: onPlanetSelect ?? undefined });
         }
       }
     });
 
     let removeListeners: (() => void) | null = null;
 
-    renderer.init({ canvas: canvasEl, width: w, height: h }).then(() => {
+    r.init({
+      canvas: canvasEl,
+      width: w,
+      height: h,
+      onPlanetClick: onPlanetSelect,
+    }).then(() => {
       if (!mounted) return;
-      if (chart) renderer.setChart(chart);
+      renderer = r;
       ro.observe(wrapperEl);
 
       let isPanning = false;
@@ -46,7 +54,7 @@
 
       const onWheel = (e: WheelEvent) => {
         e.preventDefault();
-        renderer.zoom(e.deltaY);
+        r.zoom(e.deltaY);
       };
 
       const onPointerDown = (e: PointerEvent) => {
@@ -63,7 +71,7 @@
         const dy = e.clientY - lastY;
         lastX = e.clientX;
         lastY = e.clientY;
-        renderer.pan(dx, dy);
+        r.pan(dx, dy);
       };
 
       const onPointerUp = (e: PointerEvent) => {
@@ -92,7 +100,8 @@
       mounted = false;
       ro.disconnect();
       removeListeners?.();
-      renderer.destroy();
+      r.destroy();
+      renderer = undefined;
     };
   });
 </script>
@@ -108,7 +117,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #0d1117;
+    background: #ffffff;
     border-radius: 8px;
     overflow: hidden;
   }

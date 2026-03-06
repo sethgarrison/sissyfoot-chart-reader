@@ -1,11 +1,18 @@
 <script lang="ts">
-  import type { NatalChart } from "../models";
+  import type { NatalChart, PlanetPlacement } from "../models";
+  import type { ChartApiParams } from "../api/chartApi";
 
   interface Props {
     chart: NatalChart;
+    selectedPlanet?: PlanetPlacement | null;
+    lastRequestParams?: ChartApiParams | null;
     onNewChart: () => void;
   }
-  let { chart, onNewChart }: Props = $props();
+  let { chart, selectedPlanet = null, lastRequestParams = null, onNewChart }: Props = $props();
+
+  function formatRequestTime(p: ChartApiParams): string {
+    return `${p.year}-${String(p.month).padStart(2, "0")}-${String(p.day).padStart(2, "0")} ${String(p.hour).padStart(2, "0")}:${String(p.min).padStart(2, "0")}`;
+  }
 </script>
 
 <aside class="reading-panel">
@@ -14,16 +21,57 @@
     <button class="new-chart-btn" onclick={onNewChart}>New Chart</button>
   </header>
 
+  {#if selectedPlanet}
+    {@const houseCusp = chart.houses.find((h) => h.house === selectedPlanet.house)}
+    <section class="reading-section focused-planet">
+      <h2>In Focus</h2>
+      <div class="planet-detail">
+        <p class="planet-detail-name">{selectedPlanet.planet}</p>
+        <p class="planet-detail-placement">
+          {selectedPlanet.sign} {selectedPlanet.degrees}&deg;{selectedPlanet.minutes.toString().padStart(2, "0")}'
+          · House {selectedPlanet.house}
+          {#if selectedPlanet.retrograde}<span class="retro">R</span>{/if}
+        </p>
+        {#if houseCusp}
+          <p class="planet-detail-house">
+            House {selectedPlanet.house} cusp: {houseCusp.sign} {houseCusp.degrees}&deg;{houseCusp.minutes.toString().padStart(2, "0")}'
+          </p>
+        {/if}
+        {#if chart.interpretations?.planet_in_sign}
+          {@const key = `${selectedPlanet.planet} in ${selectedPlanet.sign}`}
+          {#if chart.interpretations.planet_in_sign[key]}
+            <p class="planet-detail-interp">{chart.interpretations.planet_in_sign[key]}</p>
+          {/if}
+        {/if}
+        {#if chart.interpretations?.planet_in_house}
+          {@const key = `${selectedPlanet.planet} in House ${selectedPlanet.house}`}
+          {#if chart.interpretations.planet_in_house[key]}
+            <p class="planet-detail-interp">{chart.interpretations.planet_in_house[key]}</p>
+          {/if}
+        {/if}
+      </div>
+    </section>
+  {/if}
+
   <section class="reading-section">
     <h2>Chart Data</h2>
     <dl class="birth-data">
+      {#if lastRequestParams}
+        <dt>Submitted (you entered)</dt>
+        <dd>
+          {formatRequestTime(lastRequestParams)}
+          {#if lastRequestParams.timezone}
+            <span class="tz-badge">{lastRequestParams.timezone}</span>
+          {/if}
+        </dd>
+      {/if}
       <dt>Name</dt>
       <dd>{chart.birthData.name}</dd>
       <dt>Date</dt>
       <dd>{chart.birthData.date}</dd>
-      <dt>Time</dt>
+      <dt>Time (API returned)</dt>
       <dd>{chart.birthData.time}</dd>
-      <dt>Location</dt>
+      <dt>Location (lat, lng)</dt>
       <dd>{chart.birthData.latitude.toFixed(4)}, {chart.birthData.longitude.toFixed(4)}</dd>
     </dl>
   </section>
@@ -299,5 +347,53 @@
     margin: 0.2rem 0 0;
     color: #c9d1d9;
     line-height: 1.4;
+  }
+
+  .tz-badge {
+    display: inline-block;
+    margin-left: 0.4rem;
+    font-size: 0.75rem;
+    color: #6e7681;
+  }
+
+  .focused-planet {
+    background: rgba(88, 166, 255, 0.08);
+    border: 1px solid rgba(88, 166, 255, 0.25);
+    border-radius: 8px;
+    padding: 0.75rem;
+  }
+
+  .planet-detail {
+    margin: 0;
+  }
+
+  .planet-detail-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #e6edf3;
+    margin: 0 0 0.25rem;
+  }
+
+  .planet-detail-placement {
+    font-size: 0.85rem;
+    color: #8b949e;
+    font-family: monospace;
+    margin: 0 0 0.25rem;
+  }
+
+  .planet-detail-house {
+    font-size: 0.8rem;
+    color: #6e7681;
+    font-family: monospace;
+    margin: 0 0 0.5rem;
+  }
+
+  .planet-detail-interp {
+    font-size: 0.82rem;
+    color: #c9d1d9;
+    line-height: 1.4;
+    margin: 0.5rem 0 0;
+    padding-top: 0.5rem;
+    border-top: 1px solid #21262d;
   }
 </style>

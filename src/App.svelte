@@ -2,19 +2,22 @@
   import ChartCanvas from "./lib/components/ChartCanvas.svelte";
   import BirthDataForm from "./lib/components/BirthDataForm.svelte";
   import ReadingPanel from "./lib/components/ReadingPanel.svelte";
-  import type { NatalChart } from "./lib/models";
+  import type { NatalChart, PlanetPlacement } from "./lib/models";
+  import type { ChartApiParams } from "./lib/api/chartApi";
 
   let chart = $state<NatalChart | null>(null);
+  let selectedPlanet = $state<PlanetPlacement | null>(null);
+  let lastRequestParams = $state<ChartApiParams | null>(null);
 </script>
 
 <div class="app-shell" class:result-view={!!chart}>
   {#if chart}
     <main class="main-content">
-      <ChartCanvas {chart} />
+      <ChartCanvas {chart} onPlanetSelect={(p) => (selectedPlanet = p)} />
     </main>
-    <ReadingPanel {chart} onNewChart={() => (chart = null)} />
+    <ReadingPanel {chart} {selectedPlanet} {lastRequestParams} onNewChart={() => { chart = null; selectedPlanet = null; lastRequestParams = null; }} />
   {:else}
-    <BirthDataForm onChartFetched={(c) => (chart = c)} />
+    <BirthDataForm onChartFetched={(c, params) => { chart = c; lastRequestParams = params ?? null; }} />
   {/if}
 </div>
 
@@ -23,8 +26,8 @@
     min-height: 100vh;
     width: 100vw;
     overflow: hidden;
-    background: #0d1117;
-    color: #c9d1d9;
+    background: #ffffff;
+    color: #1f2937;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
   }
 

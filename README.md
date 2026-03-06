@@ -102,9 +102,24 @@ A `SAMPLE_CHART` constant is provided for development.
 
 ## API Integration
 
-The app fetches natal charts from the [sissyfoot-astrological-api](https://sissyfoot-astrological-api.onrender.com/chart) via GET with query params: `year`, `month`, `day`, `hour`, `min`, `city`, `nation`. City format: `"City,State"` (e.g. `Laurel,MS`).
+The app fetches natal charts from the [sissyfoot-astrological-api](https://sissyfoot-astrological-api.onrender.com/chart) via GET with query params: `year`, `month`, `day`, `hour`, `min`, `city`, `nation`, and optionally `house_system` (`whole_sign` or `placidus`). City format: `"City,State"` (e.g. `Laurel,MS`).
 
 The API response is transformed to our internal `NatalChart` format via `chartFromApiResponse()` in `reading.ts`.
+
+## Testing & Analysis
+
+```bash
+npm run test       # Run tests in watch mode
+npm run test:run   # Run tests once
+npm run analyze    # Fetch a chart and print an analysis report
+```
+
+The analysis script (`scripts/analyze-chart.ts`) fetches chart data and validates:
+- **Whole Sign vs Placidus** — In Whole Sign, each house cusp is at 0° of its sign; non-zero degrees indicate Placidus or another quadrant system
+- **Planet-house consistency** — For Whole Sign, each planet's sign should match its house's sign
+- **Sign order** — Houses should follow zodiac order (e.g. House 1 Libra → House 2 Scorpio → …)
+
+Tests live in `src/**/*.test.ts` and cover API fetching, `chartFromApiResponse` mapping, and chart analysis logic. They can be moved to the server when the API has its own test suite.
 
 ## Deploy to Render (Static Site)
 
