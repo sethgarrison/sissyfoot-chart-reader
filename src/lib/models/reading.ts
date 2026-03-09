@@ -165,7 +165,7 @@ export function chartFromApiResponse(api: ChartApiResponse): NatalChart {
     timezone: "UTC",
   };
 
-  const supportedPlanets = new Set(["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Pluto"]);
+  const supportedPlanets = new Set(["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"]);
   const planets: PlanetPlacement[] = api.planets
     .filter((p) => supportedPlanets.has(p.name))
     .map((p) => {

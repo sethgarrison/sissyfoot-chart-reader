@@ -111,11 +111,11 @@ export const DEFAULT_CHART_THEME: ChartTheme = {
     tooltip: 0x000000,
   },
   aspects: {
-    conjunction: 0x6b7280,
-    opposition: 0x6b7280,
-    trine: 0x6b7280,
-    square: 0x6b7280,
-    sextile: 0x6b7280,
+    conjunction: 0xfbbf24,   // amber — blending
+    opposition: 0xdc2626,   // red — tension
+    trine: 0x16a34a,       // green — harmony
+    square: 0xea580c,       // orange — challenge
+    sextile: 0x2563eb,      // blue — opportunity
     default: 0x6b7280,
   },
 };
