@@ -29,6 +29,9 @@ const INTRO_SPIN_REVOLUTIONS = 1.5; // One to two rotations before settling
 /**
  * Manages a PixiJS Application that draws an astrological wheel chart.
  * Designed to be mounted/unmounted by a Svelte component.
+ *
+ * @deprecated Prefer the SVG-based ChartSvg component for easier styling and better
+ * compatibility with animations. This renderer is retained for reference.
  */
 export class ChartRenderer {
   private app: Application;
@@ -201,9 +204,32 @@ export class ChartRenderer {
     const innerRadius = r * 0.72;
     const houseRingRadius = r * 0.55;
     const t = this.theme.chart;
+    const signColors = this.theme.signs;
     const black = 0x000000;
 
-    // 1. Inner circle: house segments with black dividing lines
+    const signColor = (sign: { name: string; element: string }) => {
+      const perSign = signColors.bySign?.[sign.name];
+      if (perSign !== undefined) return perSign;
+      const el = sign.element as keyof typeof signColors;
+      return (signColors[el] as number) ?? signColors.fire;
+    };
+
+    // 1. Zodiac segments (outer ring) — colored by sign (single Graphics, each wedge its own path+fill)
+    const zodiacSegments = new Graphics();
+    for (const sign of ZODIAC_SIGNS) {
+      const startAngle = this.eclipticToAngle(sign.degreesStart);
+      const endAngle = this.eclipticToAngle(sign.degreesEnd);
+      const color = signColor(sign);
+      zodiacSegments.moveTo(cx + Math.cos(startAngle) * innerRadius, cy + Math.sin(startAngle) * innerRadius);
+      zodiacSegments.arc(cx, cy, innerRadius, startAngle, endAngle, false);
+      zodiacSegments.lineTo(cx + Math.cos(endAngle) * r, cy + Math.sin(endAngle) * r);
+      zodiacSegments.arc(cx, cy, r, endAngle, startAngle, true);
+      zodiacSegments.closePath();
+      zodiacSegments.fill({ color, alpha: signColors.segmentFillAlpha });
+    }
+    this.chartContainer.addChild(zodiacSegments);
+
+    // 2. Inner circle: house segments with black dividing lines
     if (this.chart && this.chart.houses.length >= 12) {
       this.drawHouseSegments();
     }
@@ -288,7 +314,7 @@ export class ChartRenderer {
         text: sign.symbol,
         style: new TextStyle({
           ...labelStyle,
-          fill: black,
+          fill: signColor(sign),
           fontSize: Math.max(16, r * 0.1),
         }),
       });
@@ -309,7 +335,7 @@ export class ChartRenderer {
         container.addChild(tooltip);
       });
       container.on("pointerout", () => {
-        text.style.fill = black;
+        text.style.fill = "#" + labelColor.toString(16).padStart(6, "0");
         text.scale.set(1);
         if (tooltip) {
           container.removeChild(tooltip);

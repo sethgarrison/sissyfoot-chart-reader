@@ -45,6 +45,8 @@ export interface ChartTheme {
     retrograde: number;
     hover: number;
     tooltip: number;
+    /** Per-planet colors for the position dots (metallic/planetary colors) */
+    dotColors?: Partial<Record<string, number>>;
   };
 
   /** Aspect lines (conjunction, opposition, trine, square, sextile) */
@@ -93,12 +95,25 @@ export const DEFAULT_CHART_THEME: ChartTheme = {
     labelMuted: 0x000000,
   },
   signs: {
-    fire: 0x000000,
-    earth: 0x000000,
-    air: 0x000000,
-    water: 0x000000,
-    bySign: {},
-    segmentFillAlpha: 0,
+    fire: 0xc21807,
+    earth: 0x556b2f,
+    air: 0xe67e22,
+    water: 0x3498db,
+    bySign: {
+      Aries: 0xc21807,
+      Taurus: 0x556b2f,
+      Gemini: 0xe67e22,
+      Cancer: 0xffbf00,
+      Leo: 0xd4af37,
+      Virgo: 0x9acd32,
+      Libra: 0x0f7f4f,
+      Scorpio: 0x8b0000,
+      Sagittarius: 0x1f3a93,
+      Capricorn: 0x2e2d88,
+      Aquarius: 0x6a0dad,
+      Pisces: 0x4b0082,
+    },
+    segmentFillAlpha: 0.85,
   },
   angles: {
     tickStroke: 0x000000,
@@ -109,6 +124,18 @@ export const DEFAULT_CHART_THEME: ChartTheme = {
     retrograde: 0xb91c1c,
     hover: 0x374151,
     tooltip: 0x000000,
+    dotColors: {
+      Sun: 0xffd700,      // Gold
+      Moon: 0xe8e8e8,     // Silver / Pearl White
+      Mercury: 0xff8c00,  // Quicksilver / Iridescent Orange
+      Venus: 0x50c878,    // Copper / Emerald Green
+      Mars: 0xb22222,     // Iron / Blood Red
+      Jupiter: 0x4169e1,  // Tin / Royal Blue
+      Saturn: 0x2f2f4f,   // Lead / Black Indigo
+      Uranus: 0x00ced1,   // Aqua
+      Neptune: 0x1e90ff,  // Dodger Blue
+      Pluto: 0x4b0082,    // Indigo
+    },
   },
   aspects: {
     conjunction: 0xfbbf24,   // amber — blending
@@ -147,7 +174,11 @@ export function mergeChartThemeOver(
     Object.assign(merged.angles, partial.angles);
   }
   if (partial.planets) {
-    Object.assign(merged.planets, partial.planets);
+    const { dotColors: partialDotColors, ...partialPlanetRest } = partial.planets;
+    Object.assign(merged.planets, partialPlanetRest);
+    if (partialDotColors) {
+      merged.planets.dotColors = { ...(merged.planets.dotColors ?? {}), ...partialDotColors };
+    }
   }
   if (partial.aspects) {
     Object.assign(merged.aspects, partial.aspects);

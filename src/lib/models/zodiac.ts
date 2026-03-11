@@ -1,6 +1,9 @@
 export interface ZodiacSign {
   name: string;
+  /** Unicode symbol (e.g. ♈) - fallback when Astronomicon not available */
   symbol: string;
+  /** Astronomicon font character - use with font-family: Astronomicon */
+  astronomiconChar: string;
   element: "fire" | "earth" | "air" | "water";
   modality: "cardinal" | "fixed" | "mutable";
   rulingPlanet: string;
@@ -13,6 +16,7 @@ export const ZODIAC_SIGNS: ZodiacSign[] = [
   {
     name: "Aries",
     symbol: "\u2648",
+    astronomiconChar: "F",
     element: "fire",
     modality: "cardinal",
     rulingPlanet: "Mars",
@@ -23,6 +27,7 @@ export const ZODIAC_SIGNS: ZodiacSign[] = [
   {
     name: "Taurus",
     symbol: "\u2649",
+    astronomiconChar: "E",
     element: "earth",
     modality: "fixed",
     rulingPlanet: "Venus",
@@ -33,6 +38,7 @@ export const ZODIAC_SIGNS: ZodiacSign[] = [
   {
     name: "Gemini",
     symbol: "\u264A",
+    astronomiconChar: "D",
     element: "air",
     modality: "mutable",
     rulingPlanet: "Mercury",
@@ -43,6 +49,7 @@ export const ZODIAC_SIGNS: ZodiacSign[] = [
   {
     name: "Cancer",
     symbol: "\u264B",
+    astronomiconChar: "C",
     element: "water",
     modality: "cardinal",
     rulingPlanet: "Moon",
@@ -53,6 +60,7 @@ export const ZODIAC_SIGNS: ZodiacSign[] = [
   {
     name: "Leo",
     symbol: "\u264C",
+    astronomiconChar: "B",
     element: "fire",
     modality: "fixed",
     rulingPlanet: "Sun",
@@ -63,6 +71,7 @@ export const ZODIAC_SIGNS: ZodiacSign[] = [
   {
     name: "Virgo",
     symbol: "\u264D",
+    astronomiconChar: "A",
     element: "earth",
     modality: "mutable",
     rulingPlanet: "Mercury",
@@ -73,6 +82,7 @@ export const ZODIAC_SIGNS: ZodiacSign[] = [
   {
     name: "Libra",
     symbol: "\u264E",
+    astronomiconChar: "L",
     element: "air",
     modality: "cardinal",
     rulingPlanet: "Venus",
@@ -83,6 +93,7 @@ export const ZODIAC_SIGNS: ZodiacSign[] = [
   {
     name: "Scorpio",
     symbol: "\u264F",
+    astronomiconChar: "K",
     element: "water",
     modality: "fixed",
     rulingPlanet: "Pluto",
@@ -93,6 +104,7 @@ export const ZODIAC_SIGNS: ZodiacSign[] = [
   {
     name: "Sagittarius",
     symbol: "\u2650",
+    astronomiconChar: "J",
     element: "fire",
     modality: "mutable",
     rulingPlanet: "Jupiter",
@@ -103,6 +115,7 @@ export const ZODIAC_SIGNS: ZodiacSign[] = [
   {
     name: "Capricorn",
     symbol: "\u2651",
+    astronomiconChar: "I",
     element: "earth",
     modality: "cardinal",
     rulingPlanet: "Saturn",
@@ -113,6 +126,7 @@ export const ZODIAC_SIGNS: ZodiacSign[] = [
   {
     name: "Aquarius",
     symbol: "\u2652",
+    astronomiconChar: "H",
     element: "air",
     modality: "fixed",
     rulingPlanet: "Uranus",
@@ -123,6 +137,7 @@ export const ZODIAC_SIGNS: ZodiacSign[] = [
   {
     name: "Pisces",
     symbol: "\u2653",
+    astronomiconChar: "G",
     element: "water",
     modality: "mutable",
     rulingPlanet: "Neptune",

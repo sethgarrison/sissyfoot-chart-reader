@@ -1,5 +1,5 @@
 <script lang="ts">
-  import ChartCanvas from "./lib/components/ChartCanvas.svelte";
+  import ChartCanvasSvg from "./lib/components/ChartCanvasSvg.svelte";
   import BirthDataForm from "./lib/components/BirthDataForm.svelte";
   import ReadingPanel from "./lib/components/ReadingPanel.svelte";
   import type { NatalChart, PlanetPlacement } from "./lib/models";
@@ -13,7 +13,7 @@
 <div class="app-shell" class:result-view={!!chart}>
   {#if chart}
     <main class="main-content">
-      <ChartCanvas {chart} onPlanetSelect={(p) => (selectedPlanet = p)} />
+      <ChartCanvasSvg {chart} onPlanetSelect={(p) => (selectedPlanet = p)} />
     </main>
     <ReadingPanel {chart} {selectedPlanet} {lastRequestParams} onNewChart={() => { chart = null; selectedPlanet = null; lastRequestParams = null; }} />
   {:else}

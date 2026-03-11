@@ -1,3 +1,10 @@
+/* Astronomicon font - free astrological symbols (OFL) */
+@font-face {
+  font-family: "Astronomicon";
+  src: url("/fonts/Astronomicon.ttf") format("truetype");
+  font-display: swap;
+}
+
 *,
 *::before,
 *::after {
