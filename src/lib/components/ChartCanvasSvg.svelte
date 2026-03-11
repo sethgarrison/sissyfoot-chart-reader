@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import ChartSvg from "../chart/ChartSvg.svelte";
+  import ChartLegend from "./ChartLegend.svelte";
   import { signTotalDegrees, eclipticToAngle } from "../chart/chart-utils";
   import type { NatalChart, PlanetPlacement } from "../models";
 
@@ -130,10 +131,12 @@
     {panY}
     onPlanetSelect={handlePlanetSelect}
   />
+  <ChartLegend />
 </div>
 
 <style>
   .chart-canvas-wrapper {
+    position: relative;
     flex: 1;
     min-height: 0;
     display: flex;

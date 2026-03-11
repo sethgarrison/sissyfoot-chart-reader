@@ -75,6 +75,20 @@ export function wedgePath(
   return parts.join(" ");
 }
 
+/** Astronomicon font chars for planets */
+export const PLANET_ASTRONOMICON: Record<string, string> = {
+  Sun: "Q",
+  Moon: "R",
+  Mercury: "S",
+  Venus: "T",
+  Mars: "U",
+  Jupiter: "V",
+  Saturn: "W",
+  Uranus: "X",
+  Neptune: "Y",
+  Pluto: "Z",
+};
+
 export function planetGlyph(planet: string): string {
   const glyphs: Record<string, string> = {
     Sun: "\u2609",

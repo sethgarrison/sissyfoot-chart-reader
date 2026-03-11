@@ -40,11 +40,12 @@
   const cx = $derived(width / 2);
   const cy = $derived(height / 2);
   const r = $derived(Math.min(width, height) * 0.42);
-  const signRingHeight = $derived(r * 0.15);
-  const innerRadius = $derived(r * 0.9);
+  const signRingHeight = $derived(r * 0.12);
+  const innerRadius = $derived(r - signRingHeight);
   const houseRadius = $derived(innerRadius);
-  const planetGlyphRadius = $derived(innerRadius + (r - innerRadius) * 0.5);
+  const planetGlyphRadius = $derived((innerRadius + r) / 2);
   const centerR = $derived(r * 0.06);
+  const outerEdge = $derived(r + signRingHeight);
 
   const transform = $derived(
     `translate(${cx + panX}, ${cy + panY}) scale(${scale}) translate(${-cx}, ${-cy})`
@@ -55,7 +56,7 @@
 
   const signFontSize = $derived(Math.max(20, r * 0.12));
   const houseFontSize = $derived(Math.max(10, r * 0.06));
-  const planetFontSize = $derived(Math.max(11, r * 0.06));
+  const planetFontSize = $derived(Math.max(18, r * 0.1));
   const tooltipFontSize = $derived(Math.max(12, r * 0.055));
   const angleFontSize = $derived(Math.max(10, r * 0.055));
 
@@ -169,8 +170,8 @@
         class="house-cusp"
         x1={cx + Math.cos(cuspAngle) * centerR}
         y1={cy + Math.sin(cuspAngle) * centerR}
-        x2={cx + Math.cos(cuspAngle) * r}
-        y2={cy + Math.sin(cuspAngle) * r}
+        x2={cx + Math.cos(cuspAngle) * outerEdge}
+        y2={cy + Math.sin(cuspAngle) * outerEdge}
         stroke={hexToCss(0x000000)}
         stroke-width="1.5"
       />
@@ -180,10 +181,10 @@
     {#each ZODIAC_SIGNS as zodiacSign}
       {@const a = angle(zodiacSign.degreesStart)}
       <line
-        x1={cx + Math.cos(a) * innerRadius}
-        y1={cy + Math.sin(a) * innerRadius}
-        x2={cx + Math.cos(a) * r}
-        y2={cy + Math.sin(a) * r}
+        x1={cx + Math.cos(a) * centerR}
+        y1={cy + Math.sin(a) * centerR}
+        x2={cx + Math.cos(a) * outerEdge}
+        y2={cy + Math.sin(a) * outerEdge}
         stroke={hexToCss(0x000000)}
         stroke-width="1.5"
       />
@@ -334,7 +335,7 @@
                 text-anchor="middle"
                 dominant-baseline="central"
                 font-size={planetFontSize}
-                fill={hexToCss(isHovered ? theme.planets.hover : p.retrograde ? theme.planets.retrograde : theme.planets.default)}
+                fill={isHovered ? hexToCss(theme.planets.hover) : "#ffffff"}
               >
                 {planetGlyph(p.planet)}
               </text>
@@ -417,6 +418,10 @@
 
   .chart-svg .zodiac-segment.sign-hover {
     fill-opacity: 0.7;
+  }
+
+  .sign-glyph {
+    font-family: "Astronomicon", serif;
   }
 
   .chart-svg .sign-label .sign-glyph {
