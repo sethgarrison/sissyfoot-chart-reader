@@ -2,20 +2,32 @@
   import ChartCanvasSvg from "./lib/components/ChartCanvasSvg.svelte";
   import BirthDataForm from "./lib/components/BirthDataForm.svelte";
   import ReadingPanel from "./lib/components/ReadingPanel.svelte";
+  import InteractiveReading from "./lib/components/InteractiveReading.svelte";
   import type { NatalChart, PlanetPlacement } from "./lib/models";
   import type { ChartApiParams } from "./lib/api/chartApi";
 
   let chart = $state<NatalChart | null>(null);
   let selectedPlanet = $state<PlanetPlacement | null>(null);
   let lastRequestParams = $state<ChartApiParams | null>(null);
+  let readingMode = $state(false);
 </script>
 
 <div class="app-shell" class:result-view={!!chart}>
   {#if chart}
-    <main class="main-content">
-      <ChartCanvasSvg {chart} onPlanetSelect={(p) => (selectedPlanet = p)} />
-    </main>
-    <ReadingPanel {chart} {selectedPlanet} {lastRequestParams} onNewChart={() => { chart = null; selectedPlanet = null; lastRequestParams = null; }} />
+    {#if readingMode}
+      <InteractiveReading {chart} onClose={() => (readingMode = false)} />
+    {:else}
+      <main class="main-content">
+        <ChartCanvasSvg {chart} onPlanetSelect={(p) => (selectedPlanet = p)} />
+      </main>
+      <ReadingPanel
+        {chart}
+        {selectedPlanet}
+        {lastRequestParams}
+        onNewChart={() => { chart = null; selectedPlanet = null; lastRequestParams = null; readingMode = false; }}
+        onStartReading={() => (readingMode = true)}
+      />
+    {/if}
   {:else}
     <BirthDataForm onChartFetched={(c, params) => { chart = c; lastRequestParams = params ?? null; }} />
   {/if}

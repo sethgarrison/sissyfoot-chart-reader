@@ -55,6 +55,13 @@ export interface BirthData {
   timezone: string;
 }
 
+/** Element/quality count + signs from API. Interpretation added when available. */
+export interface ElementOrModalityEntry {
+  count: number;
+  signs: string[];
+  interpretation?: string;
+}
+
 /**
  * Chart interpretations from the API.
  */
@@ -67,6 +74,25 @@ export interface ChartInterpretations {
     interpretation?: string;
     distribution?: Record<string, string>;
   };
+  /** Element/modality interpretation keys → text (e.g. element_fire_dominant, quality_balanced) */
+  modality_element_distribution?: Record<string, string>;
+  /** List of retrograde planet names */
+  retrograde_planets?: string[];
+  /** Retrograde interpretations, same key format as planet_in_sign / planet_in_house */
+  retrograde_interpretations?: Record<string, string>;
+  /** Planet counts by element (fire, earth, air, water) — from houses_overview or legacy */
+  by_element?: Record<string, ElementOrModalityEntry>;
+  /** Planet counts by modality (cardinal, fixed, mutable) — from houses_overview or legacy */
+  by_quality?: Record<string, ElementOrModalityEntry>;
+  /** House overview interpretations — from API (legacy/flat) */
+  houses_overview?: Record<string, string>;
+}
+
+/** Supporting data: element/modality counts + signs (from chart.houses_overview) */
+export interface SignPlacementOverview {
+  signs_with_planets?: string[];
+  by_element?: Record<string, ElementOrModalityEntry & { planets?: string[] }>;
+  by_quality?: Record<string, ElementOrModalityEntry & { planets?: string[] }>;
 }
 
 /**
@@ -80,6 +106,8 @@ export interface NatalChart {
   aspects: Aspect[];
   ascendant: { sign: string; degrees: number; minutes: number };
   midheaven: { sign: string; degrees: number; minutes: number };
+  /** Element/modality counts from server (by_element, by_quality, signs_with_planets) */
+  houses_overview?: SignPlacementOverview;
   interpretations?: ChartInterpretations;
 }
 
@@ -132,6 +160,7 @@ export interface ChartApiResponse {
     orbit: number;
     movement: string;
   }>;
+  houses_overview?: SignPlacementOverview;
   interpretations?: {
     planet_in_sign?: Record<string, string>;
     planet_in_house?: Record<string, string>;
@@ -141,6 +170,12 @@ export interface ChartApiResponse {
       interpretation?: string;
       distribution?: Record<string, string>;
     };
+    modality_element_distribution?: Record<string, string>;
+    retrograde_planets?: string[];
+    retrograde_interpretations?: Record<string, string>;
+    by_element?: Record<string, { count: number; signs: string[]; interpretation?: string; planets?: string[] }>;
+    by_quality?: Record<string, { count: number; signs: string[]; interpretation?: string; planets?: string[] }>;
+    houses_overview?: Record<string, string>;
   };
 }
 
@@ -222,6 +257,7 @@ export function chartFromApiResponse(api: ChartApiResponse): NatalChart {
     midheaven: house10
       ? { ...degToDegMin(house10.degree), sign: house10.sign }
       : { sign: "Aries", degrees: 0, minutes: 0 },
+    houses_overview: api.houses_overview,
     interpretations: api.interpretations,
   };
 }

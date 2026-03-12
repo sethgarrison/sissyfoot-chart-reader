@@ -7,8 +7,9 @@
     selectedPlanet?: PlanetPlacement | null;
     lastRequestParams?: ChartApiParams | null;
     onNewChart: () => void;
+    onStartReading?: () => void;
   }
-  let { chart, selectedPlanet = null, lastRequestParams = null, onNewChart }: Props = $props();
+  let { chart, selectedPlanet = null, lastRequestParams = null, onNewChart, onStartReading }: Props = $props();
 
   function formatRequestTime(p: ChartApiParams): string {
     return `${p.year}-${String(p.month).padStart(2, "0")}-${String(p.day).padStart(2, "0")} ${String(p.hour).padStart(2, "0")}:${String(p.min).padStart(2, "0")}`;
@@ -18,7 +19,12 @@
 <aside class="reading-panel">
   <header class="reading-header">
     <h1>Astro Chart</h1>
-    <button class="new-chart-btn" onclick={onNewChart}>New Chart</button>
+    <div class="header-actions">
+      {#if onStartReading}
+        <button class="start-reading-btn" onclick={onStartReading}>Start Reading</button>
+      {/if}
+      <button class="new-chart-btn" onclick={onNewChart}>New Chart</button>
+    </div>
   </header>
 
   {#if selectedPlanet}
@@ -205,6 +211,26 @@
     align-items: center;
     justify-content: space-between;
     gap: 0.5rem;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .start-reading-btn {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8rem;
+    background: #238636;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .start-reading-btn:hover {
+    background: #2ea043;
   }
 
   .reading-header h1 {
