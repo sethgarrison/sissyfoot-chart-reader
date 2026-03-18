@@ -45,6 +45,7 @@
 
   .app-shell.result-view {
     display: flex;
+    flex-direction: row;
     height: 100vh;
   }
 
@@ -53,5 +54,22 @@
     display: flex;
     padding: 1rem;
     min-width: 0;
+  }
+
+  @media (max-width: 768px) {
+    .app-shell.result-view {
+      flex-direction: column;
+      height: auto;
+      min-height: 100vh;
+      overflow-y: auto;
+    }
+
+    .main-content {
+      flex: none;
+      width: 100%;
+      aspect-ratio: 1;
+      min-height: 280px;
+      padding: 0.5rem;
+    }
   }
 </style>

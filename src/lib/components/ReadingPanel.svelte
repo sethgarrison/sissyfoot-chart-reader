@@ -305,6 +305,7 @@
   .reading-panel {
     width: 340px;
     min-width: 300px;
+    flex-shrink: 0;
     background: #161b22;
     border-left: 1px solid #30363d;
     padding: 1.25rem;
@@ -312,6 +313,18 @@
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
+  }
+
+  @media (max-width: 768px) {
+    .reading-panel {
+      width: 100%;
+      min-width: unset;
+      flex: 1;
+      min-height: 0;
+      max-height: 50vh;
+      border-left: none;
+      border-top: 1px solid #30363d;
+    }
   }
 
   .reading-header {
