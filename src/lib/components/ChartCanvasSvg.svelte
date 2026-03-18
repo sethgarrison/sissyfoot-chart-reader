@@ -9,13 +9,14 @@
   let width = $state(400);
   let height = $state(400);
 
-  const MIN_ZOOM = 1;
+  const MIN_ZOOM = 0.4;
   const MAX_ZOOM = 5;
   const ZOOM_STEP = 0.15;
 
   let scale = $state(1);
   let panX = $state(0);
   let panY = $state(0);
+  let showLegend = $state(true);
 
   interface Props {
     chart?: NatalChart | null;
@@ -37,6 +38,10 @@
     scale = 1;
     panX = 0;
     panY = 0;
+  }
+
+  function focusOut() {
+    scale = Math.max(MIN_ZOOM, scale * 0.7);
   }
 
   function focusOnPlanet(planet: PlanetPlacement) {
@@ -131,7 +136,23 @@
     {panY}
     onPlanetSelect={handlePlanetSelect}
   />
-  <ChartLegend />
+  {#if showLegend}
+    <ChartLegend />
+  {/if}
+  <div class="chart-controls">
+    <button
+      type="button"
+      class="control-btn"
+      onclick={() => (showLegend = !showLegend)}
+      title={showLegend ? "Hide legend" : "Show legend"}
+      aria-label={showLegend ? "Hide legend" : "Show legend"}
+    >
+      {showLegend ? "Legend ▼" : "Legend ▶"}
+    </button>
+    <button type="button" class="control-btn" onclick={focusOut} title="Zoom out to see interpretations">
+      Zoom out
+    </button>
+  </div>
 </div>
 
 <style>
@@ -151,5 +172,30 @@
     display: block;
     max-width: 100%;
     max-height: 100%;
+  }
+
+  .chart-controls {
+    position: absolute;
+    bottom: 0.75rem;
+    right: 0.75rem;
+    display: flex;
+    gap: 0.5rem;
+    z-index: 5;
+  }
+
+  .control-btn {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.75rem;
+    background: rgba(255, 255, 255, 0.92);
+    color: #374151;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  }
+
+  .control-btn:hover {
+    background: #fff;
+    border-color: #9ca3af;
   }
 </style>
