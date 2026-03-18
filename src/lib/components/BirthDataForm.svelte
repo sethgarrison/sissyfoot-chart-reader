@@ -5,8 +5,10 @@
     fetchReadings,
     fetchReadingById,
     type ChartApiParams,
+    type LocationResult,
     type ReadingSummary,
   } from "../api/chartApi";
+  import LocationInput from "./LocationInput.svelte";
   import type { NatalChart } from "../models";
 
   interface Props {
@@ -21,11 +23,12 @@
     day: 10,
     hour: 11,
     min: 36,
-    city: "Laurel,MS",
-    nation: "US",
+    lat: 31.6941,
+    lng: -89.1306,
     timezone: "America/Chicago",
-    house_system: "placidus",
+    house_system: "whole_sign",
   });
+  let locationDisplay = $state("Laurel, MS, United States");
   let loading = $state(false);
   let error = $state<string | null>(null);
 
@@ -72,6 +75,28 @@
     const name = (r.name || "Unknown").replace(/_/g, " ");
     return `${name} — ${date}`;
   }
+
+  function handleLocationSelect(loc: LocationResult) {
+    form = {
+      ...form,
+      lat: loc.lat,
+      lng: loc.lng,
+      timezone: loc.timezone,
+      city: loc.city,
+      nation: loc.nation,
+    };
+    locationDisplay = loc.display;
+  }
+
+  function handleLocationClear() {
+    form = { ...form, lat: undefined, lng: undefined, timezone: undefined, city: undefined, nation: undefined };
+    locationDisplay = "";
+  }
+
+  const hasValidLocation = $derived(
+    (form.lat != null && form.lng != null && (form.timezone?.trim() ?? "").length > 0) ||
+    (!!(form.city?.trim()) && !!(form.nation?.trim()))
+  );
 </script>
 
 <div class="form-view">
@@ -102,24 +127,8 @@
       </div>
     </label>
     <label>
-      <span>City, State</span>
-      <input type="text" bind:value={form.city} placeholder="Laurel,MS" />
-    </label>
-    <label>
-      <span>Timezone</span>
-      <input type="text" bind:value={form.timezone} placeholder="America/Chicago" list="tz-suggestions" />
-      <datalist id="tz-suggestions">
-        <option value="America/New_York"></option>
-        <option value="America/Chicago"></option>
-        <option value="America/Denver"></option>
-        <option value="America/Los_Angeles"></option>
-        <option value="America/Phoenix"></option>
-        <option value="UTC"></option>
-      </datalist>
-    </label>
-    <label>
-      <span>Country</span>
-      <input type="text" bind:value={form.nation} placeholder="US" />
+      <span>Location</span>
+      <LocationInput value={locationDisplay} onSelect={handleLocationSelect} onClear={handleLocationClear} placeholder="Search for a city…" />
     </label>
     <label>
       <span>House System</span>
@@ -145,7 +154,7 @@
     {#if error}
       <p class="form-error">{error}</p>
     {/if}
-    <button type="submit" disabled={loading}>
+    <button type="submit" disabled={loading || !hasValidLocation}>
       {loading ? "Loading…" : "Get Chart"}
     </button>
   </form>

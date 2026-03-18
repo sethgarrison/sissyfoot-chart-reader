@@ -3,7 +3,13 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { chartFromApiResponse, SAMPLE_CHART } from "./reading";
+import {
+  chartFromApiResponse,
+  getAspectInterpretation,
+  aspectCategoryToServerKey,
+  getAspectCategory,
+  SAMPLE_CHART,
+} from "./reading";
 import { signTotalDegrees } from "../analysis/chartAnalysis";
 import { ZODIAC_SIGNS } from "./zodiac";
 
@@ -74,7 +80,7 @@ describe("chartFromApiResponse", () => {
     expect(chart.ascendant.minutes).toBe(30); // 0.5 * 60
   });
 
-  it("filters out unsupported planets (e.g. Chiron)", () => {
+  it("includes Chiron when present in API", () => {
     const api = {
       name: null,
       birth_datetime: "1990-06-15T00:00",
@@ -98,7 +104,7 @@ describe("chartFromApiResponse", () => {
 
     const chart = chartFromApiResponse(api);
     expect(chart.planets.map((p) => p.planet)).toContain("Sun");
-    expect(chart.planets.map((p) => p.planet)).not.toContain("Chiron");
+    expect(chart.planets.map((p) => p.planet)).toContain("Chiron");
   });
 });
 
@@ -134,5 +140,44 @@ describe("signTotalDegrees", () => {
 
   it("returns 0 for unknown sign", () => {
     expect(signTotalDegrees("Unknown", 10, 0)).toBe(0);
+  });
+});
+
+describe("getAspectInterpretation", () => {
+  it("returns aspect.interpretation when present (API sends per-aspect)", () => {
+    const aspect = {
+      planet1: "Sun",
+      planet2: "Moon",
+      type: "square" as const,
+      interpretation: "Tension between ego and emotions.",
+    };
+    expect(getAspectInterpretation(aspect, undefined)).toBe(aspect.interpretation);
+  });
+
+  it("falls back to aspects_by_category when aspect has no interpretation", () => {
+    const interp = {
+      aspects_by_category: { stressful: "Stressful aspects bring challenge." },
+    };
+    expect(getAspectInterpretation({ planet1: "Sun", planet2: "Moon", type: "square" }, interp)).toBe(
+      "Stressful aspects bring challenge."
+    );
+  });
+
+  it("falls back to aspects_by_category using server key easy-flowing", () => {
+    const interp = {
+      aspects_by_category: { "easy-flowing": "Easy-flowing aspects support harmony." },
+    };
+    expect(getAspectInterpretation({ planet1: "Venus", planet2: "Mars", type: "sextile" }, interp)).toBe(
+      "Easy-flowing aspects support harmony."
+    );
+  });
+});
+
+describe("aspectCategoryToServerKey", () => {
+  it("maps categories to server type_key", () => {
+    expect(aspectCategoryToServerKey("conjunction")).toBe("conjunction");
+    expect(aspectCategoryToServerKey("easy_flowing")).toBe("easy-flowing");
+    expect(aspectCategoryToServerKey("stressful")).toBe("stressful");
+    expect(aspectCategoryToServerKey("adjustment")).toBe("stressful");
   });
 });

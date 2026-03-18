@@ -7,6 +7,16 @@ import { chartFromApiResponse, type ChartApiResponse, type NatalChart } from "..
 
 const API_BASE = "https://sissyfoot-astrological-api.onrender.com";
 
+/** Location result from /locations search. Use lat/lng + timezone for chart requests when available. */
+export interface LocationResult {
+  display: string;
+  city?: string;
+  nation?: string;
+  timezone: string;
+  lat?: number;
+  lng?: number;
+}
+
 export interface ChartApiParams {
   name?: string;
   year: number;
@@ -14,37 +24,64 @@ export interface ChartApiParams {
   day: number;
   hour: number;
   min: number;
-  city: string;  // "City,State" e.g. "Laurel,MS"
-  nation: string; // "US"
-  /** IANA timezone e.g. "America/Chicago" — required for accurate chart vs astro.com */
+  /** Use city + nation when lat/lng not set (legacy). */
+  city?: string;
+  nation?: string;
+  /** Use lat + lng + timezone when available (recommended — avoids geocoding ambiguity). */
+  lat?: number;
+  lng?: number;
+  /** IANA timezone (e.g. "America/Chicago"). Required when using lat/lng. */
   timezone?: string;
   /** House system: "whole_sign" (default) or "placidus" */
   house_system?: "whole_sign" | "placidus";
 }
 
-/**
- * Fetch a natal chart from the API.
- * Uses `time` (HH:MM) for birth time—overrides hour/minute and ensures minutes are preserved.
- * Sends `tz_str` for timezone per API spec.
- */
-export async function fetchChart(params: ChartApiParams): Promise<NatalChart> {
+/** Build URL search params for chart API. Exported for debugging. */
+export function buildChartSearchParams(params: ChartApiParams): URLSearchParams {
   const search = new URLSearchParams({
     year: String(params.year),
     month: String(params.month),
     day: String(params.day),
     time: `${String(params.hour).padStart(2, "0")}:${String(params.min).padStart(2, "0")}`,
-    city: params.city,
-    nation: params.nation,
   });
-  if (params.name?.trim()) {
-    search.set("name", params.name.trim());
+  const useCoords = params.lat != null && params.lng != null && params.timezone?.trim();
+  if (useCoords) {
+    search.set("lat", String(params.lat));
+    search.set("lng", String(params.lng));
+    search.set("tz_str", params.timezone!.trim());
+  } else if (params.city && params.nation) {
+    search.set("city", params.city);
+    search.set("nation", params.nation);
+    if (params.timezone?.trim()) search.set("tz_str", params.timezone.trim());
+  } else {
+    throw new Error("Provide either (lat, lng, timezone) or (city, nation) for location");
   }
-  if (params.house_system) {
-    search.set("house_system", params.house_system);
+  if (params.name?.trim()) search.set("name", params.name.trim());
+  if (params.house_system) search.set("house_system", params.house_system);
+  return search;
+}
+
+/**
+ * Search for locations by query. Used for autocomplete.
+ */
+export async function fetchLocations(q: string, limit = 10): Promise<LocationResult[]> {
+  const query = q.trim();
+  if (!query) return [];
+  const search = new URLSearchParams({ q: query, limit: String(limit) });
+  const res = await fetch(`${API_BASE}/locations?${search}`);
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Locations API error ${res.status}: ${text}`);
   }
-  if (params.timezone?.trim()) {
-    search.set("tz_str", params.timezone.trim());
-  }
+  return res.json();
+}
+
+/**
+ * Fetch a natal chart from the API.
+ * Uses lat/lng + timezone when available; otherwise city + nation.
+ */
+export async function fetchChart(params: ChartApiParams): Promise<NatalChart> {
+  const search = buildChartSearchParams(params);
   const res = await fetch(`${API_BASE}/chart?${search}`);
   if (!res.ok) {
     const text = await res.text();
@@ -52,6 +89,33 @@ export async function fetchChart(params: ChartApiParams): Promise<NatalChart> {
   }
   const api: ChartApiResponse = await res.json();
   return chartFromApiResponse(api);
+}
+
+/**
+ * Fetch raw chart JSON from the API (no transformation).
+ * Useful for debugging and inspecting server response structure.
+ */
+export async function fetchChartRaw(params: ChartApiParams): Promise<ChartApiResponse> {
+  const search = buildChartSearchParams(params);
+  const res = await fetch(`${API_BASE}/chart?${search}`);
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Chart API error ${res.status}: ${text}`);
+  }
+  return res.json();
+}
+
+/**
+ * Fetch raw reading JSON by identifier (no transformation).
+ */
+export async function fetchReadingByIdRaw(identifier: string): Promise<ChartApiResponse> {
+  const encoded = encodeURIComponent(identifier);
+  const res = await fetch(`${API_BASE}/readings/${encoded}`);
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Readings API error ${res.status}: ${text}`);
+  }
+  return res.json();
 }
 
 /** Summary of a saved reading from the readings list. */

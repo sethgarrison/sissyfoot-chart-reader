@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { NatalChart, PlanetPlacement } from "../models";
+  import { parseHouseInterpretation, getPlanetInHouseInterpretation, getAspectInterpretation } from "../models/reading";
   import type { ChartApiParams } from "../api/chartApi";
 
   interface Props {
@@ -14,6 +15,11 @@
   function formatRequestTime(p: ChartApiParams): string {
     return `${p.year}-${String(p.month).padStart(2, "0")}-${String(p.day).padStart(2, "0")} ${String(p.hour).padStart(2, "0")}:${String(p.min).padStart(2, "0")}`;
   }
+
+  /** Parse house_interpretation: per_house (sign + planet interpretations) + shape/quadrant/hemisphere */
+  const parsedHouse = $derived(
+    parseHouseInterpretation(chart.interpretations?.house_interpretation as Record<string, unknown> | undefined)
+  );
 </script>
 
 <aside class="reading-panel">
@@ -49,10 +55,16 @@
             <p class="planet-detail-interp">{chart.interpretations.planet_in_sign[key]}</p>
           {/if}
         {/if}
-        {#if chart.interpretations?.planet_in_house}
-          {@const key = `${selectedPlanet.planet} in House ${selectedPlanet.house}`}
-          {#if chart.interpretations.planet_in_house[key]}
-            <p class="planet-detail-interp">{chart.interpretations.planet_in_house[key]}</p>
+        {#if getPlanetInHouseInterpretation(selectedPlanet.planet, selectedPlanet.house, chart.interpretations)}
+          <p class="planet-detail-interp">{getPlanetInHouseInterpretation(selectedPlanet.planet, selectedPlanet.house, chart.interpretations)}</p>
+        {/if}
+        {#if selectedPlanet.retrograde && chart.interpretations?.retrograde_interpretations}
+          {@const signKey = `${selectedPlanet.planet} in ${selectedPlanet.sign}`}
+          {@const houseKey = `${selectedPlanet.planet} in House ${selectedPlanet.house}`}
+          {#if chart.interpretations.retrograde_interpretations[signKey]}
+            <p class="planet-detail-interp retrograde-note">{chart.interpretations.retrograde_interpretations[signKey]}</p>
+          {:else if chart.interpretations.retrograde_interpretations[houseKey]}
+            <p class="planet-detail-interp retrograde-note">{chart.interpretations.retrograde_interpretations[houseKey]}</p>
           {/if}
         {/if}
       </div>
@@ -134,10 +146,74 @@
     <section class="reading-section interpretations-section">
       <h2>Interpretations</h2>
 
-      {#if Object.keys(chart.interpretations.planet_in_sign ?? {}).length > 0}
-        <h3 class="interpretations-sub">Planet in Sign</h3>
+      {#if chart.interpretations.rising_sign_interpretation}
+        <h3 class="interpretations-sub">Rising Sign</h3>
+        <p class="interpretation-text">{chart.interpretations.rising_sign_interpretation}</p>
+      {/if}
+
+      {#if chart.interpretations.big_three}
+        {@const bt = chart.interpretations.big_three}
+        {@const sunSign = chart.planets.find((p) => p.planet === "Sun")?.sign ?? ""}
+        {@const moonSign = chart.planets.find((p) => p.planet === "Moon")?.sign}
+        {@const risingSign = chart.ascendant.sign}
+        {#if (bt.sun?.[sunSign] ?? bt.moon?.[moonSign ?? ""] ?? bt.ascendant?.[risingSign])}
+          <h3 class="interpretations-sub">Big Three</h3>
+          <ul class="interpretations-list">
+            {#if bt.sun?.[sunSign]?.interpretation}
+              <li class="interpretation-item">
+                <strong class="interpretation-label">Sun in {sunSign}</strong>
+                <p class="interpretation-text">{bt.sun[sunSign].interpretation}</p>
+              </li>
+            {/if}
+            {#if moonSign && bt.moon?.[moonSign]?.interpretation}
+              <li class="interpretation-item">
+                <strong class="interpretation-label">Moon in {moonSign}</strong>
+                <p class="interpretation-text">{bt.moon[moonSign].interpretation}</p>
+              </li>
+            {/if}
+            {#if bt.ascendant?.[risingSign]?.interpretation}
+              <li class="interpretation-item">
+                <strong class="interpretation-label">Ascendant in {risingSign}</strong>
+                <p class="interpretation-text">{bt.ascendant[risingSign].interpretation}</p>
+              </li>
+            {/if}
+          </ul>
+        {/if}
+      {/if}
+
+      {#if parsedHouse.perHouse.length > 0 || parsedHouse.other.length > 0}
+        <h3 class="interpretations-sub">House Interpretations</h3>
+        {#each parsedHouse.perHouse as entry}
+          <div class="house-interpretation-block">
+            <p class="house-interpretation-header">
+              <strong>House {entry.house}</strong>
+              {#if entry.sign_on_cusp}
+                <span class="house-cusp-sign">({entry.sign_on_cusp} on cusp)</span>
+              {/if}
+            </p>
+            {#if entry.planets.length > 0}
+              <p class="house-planets-list">Planets: {entry.planets.join(", ")}</p>
+            {/if}
+            {#if entry.sign_interpretation}
+              <p class="interpretation-text sign-interp">{entry.sign_interpretation}</p>
+            {/if}
+            {#each Object.entries(entry.planet_interpretations) as [key, text]}
+              <p class="interpretation-text planet-house-interp"><strong>{key}:</strong> {text}</p>
+            {/each}
+          </div>
+        {/each}
+        {#each parsedHouse.other as { label, text }}
+          <div class="interpretation-item">
+            <strong class="interpretation-label">{label}</strong>
+            <p class="interpretation-text">{text}</p>
+          </div>
+        {/each}
+      {/if}
+
+      {#if parsedHouse.perHouse.length === 0 && Object.keys(chart.interpretations.planet_in_house ?? {}).length > 0}
+        <h3 class="interpretations-sub">Planet in House</h3>
         <ul class="interpretations-list">
-          {#each Object.entries(chart.interpretations.planet_in_sign ?? {}) as [key, text]}
+          {#each Object.entries(chart.interpretations.planet_in_house ?? {}) as [key, text]}
             <li class="interpretation-item">
               <strong class="interpretation-label">{key}</strong>
               <p class="interpretation-text">{text}</p>
@@ -146,10 +222,10 @@
         </ul>
       {/if}
 
-      {#if Object.keys(chart.interpretations.planet_in_house ?? {}).length > 0}
-        <h3 class="interpretations-sub">Planet in House</h3>
+      {#if Object.keys(chart.interpretations.planet_in_sign ?? {}).length > 0}
+        <h3 class="interpretations-sub">Planet in Sign</h3>
         <ul class="interpretations-list">
-          {#each Object.entries(chart.interpretations.planet_in_house ?? {}) as [key, text]}
+          {#each Object.entries(chart.interpretations.planet_in_sign ?? {}) as [key, text]}
             <li class="interpretation-item">
               <strong class="interpretation-label">{key}</strong>
               <p class="interpretation-text">{text}</p>
@@ -178,16 +254,48 @@
         {/if}
       {/if}
 
-      {#if Object.keys(chart.interpretations.aspects ?? {}).length > 0}
-        <h3 class="interpretations-sub">Aspect Interpretations</h3>
+      {#if chart.aspects.length > 0}
+        {@const aspectsWithInterp = chart.aspects.filter((a) => getAspectInterpretation(a, chart.interpretations))}
+        {#if aspectsWithInterp.length > 0}
+          <h3 class="interpretations-sub">Aspect Interpretations</h3>
+          <ul class="interpretations-list">
+            {#each aspectsWithInterp as a}
+              {@const interp = getAspectInterpretation(a, chart.interpretations)}
+              {#if interp}
+                <li class="interpretation-item">
+                  <strong class="interpretation-label">{a.planet1} {a.type} {a.planet2}</strong>
+                  <p class="interpretation-text">{interp}</p>
+                </li>
+              {/if}
+            {/each}
+          </ul>
+        {/if}
+      {/if}
+
+      {#if Object.keys(chart.interpretations.modality_element_distribution ?? {}).length > 0}
+        <h3 class="interpretations-sub">Element & Modality</h3>
         <ul class="interpretations-list">
-          {#each Object.entries(chart.interpretations.aspects ?? {}) as [key, text]}
+          {#each Object.entries(chart.interpretations.modality_element_distribution ?? {}) as [key, text]}
             <li class="interpretation-item">
-              <strong class="interpretation-label">{key}</strong>
+              <strong class="interpretation-label">{key.replace(/_/g, " ")}</strong>
               <p class="interpretation-text">{text}</p>
             </li>
           {/each}
         </ul>
+      {/if}
+
+      {#if chart.interpretations.retrograde_planets && chart.interpretations.retrograde_planets.length > 0}
+        {#if Object.keys(chart.interpretations.retrograde_interpretations ?? {}).length > 0}
+          <h3 class="interpretations-sub">Retrograde</h3>
+          <ul class="interpretations-list">
+            {#each Object.entries(chart.interpretations.retrograde_interpretations ?? {}) as [key, text]}
+              <li class="interpretation-item">
+                <strong class="interpretation-label">{key}</strong>
+                <p class="interpretation-text">{text}</p>
+              </li>
+            {/each}
+          </ul>
+        {/if}
       {/if}
     </section>
   {/if}
@@ -373,6 +481,52 @@
     margin: 0.2rem 0 0;
     color: #c9d1d9;
     line-height: 1.4;
+    font-size: 0.82rem;
+  }
+
+  .house-interpretation-block {
+    font-size: 0.82rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #21262d;
+  }
+
+  .house-interpretation-block:last-of-type {
+    border-bottom: none;
+  }
+
+  .house-interpretation-header {
+    margin: 0 0 0.25rem;
+    font-size: 0.82rem;
+    color: #e6edf3;
+  }
+
+  .house-interpretation-header strong {
+    color: #79c0ff;
+    font-weight: 600;
+  }
+
+  .house-cusp-sign {
+    color: #a5d6ff;
+    font-weight: 400;
+    margin-left: 0.25em;
+  }
+
+  .house-planets-list {
+    margin: 0 0 0.25rem;
+    font-size: 0.72rem;
+    color: #e6edf3;
+  }
+
+  .planet-house-interp {
+    font-size: 0.62rem;
+    margin: 0.12rem 0 0;
+    color: #c9d1d9;
+    line-height: 1.35;
+  }
+
+  .planet-house-interp strong {
+    color: #79c0ff;
+    font-weight: 500;
   }
 
   .tz-badge {

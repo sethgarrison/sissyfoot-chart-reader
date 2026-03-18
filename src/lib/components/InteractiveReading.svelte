@@ -1,14 +1,15 @@
 <script lang="ts">
   import type { NatalChart } from "../models";
-import {
-  buildReadingSlides,
-  computeElementCounts,
-  computeHemispheres,
-  computeModalityCounts,
-  computePlanetsByHouse,
-  computeQuarters,
-  getBigThree,
-} from "../reading";
+  import { getAspectInterpretation, getPlanetInHouseInterpretation } from "../models/reading";
+  import {
+    buildReadingSlides,
+    computeElementCounts,
+    computeHemispheres,
+    computeModalityCounts,
+    computePlanetsByHouse,
+    computeQuarters,
+    getBigThree,
+  } from "../reading";
   import type { ReadingSlide } from "../reading/slideTypes";
 
   interface Props {
@@ -96,8 +97,11 @@ import {
                   ? `${bigThree.sun.sign} ${bigThree.sun.degrees}°${bigThree.sun.minutes.toString().padStart(2, "0")}' · House ${bigThree.sun.house}`
                   : "—"}
               </dd>
-              {#if bigThree.sun && chart.interpretations?.planet_in_sign?.[`Sun in ${bigThree.sun.sign}`]}
-                <dd class="interp">{chart.interpretations.planet_in_sign[`Sun in ${bigThree.sun.sign}`]}</dd>
+              {#if bigThree.sun}
+                {@const sunInterp = chart.interpretations?.big_three?.sun?.[bigThree.sun.sign]?.interpretation ?? chart.interpretations?.planet_in_sign?.[`Sun in ${bigThree.sun.sign}`]}
+                {#if sunInterp}
+                  <dd class="interp">{sunInterp}</dd>
+                {/if}
               {/if}
               <dt>Moon</dt>
               <dd class="placement">
@@ -105,15 +109,16 @@ import {
                   ? `${bigThree.moon.sign} ${bigThree.moon.degrees}°${bigThree.moon.minutes.toString().padStart(2, "0")}' · House ${bigThree.moon.house}`
                   : "—"}
               </dd>
-              {#if bigThree.moon && chart.interpretations?.planet_in_sign?.[`Moon in ${bigThree.moon.sign}`]}
-                <dd class="interp">{chart.interpretations.planet_in_sign[`Moon in ${bigThree.moon.sign}`]}</dd>
+              {#if bigThree.moon}
+                {@const moonInterp = chart.interpretations?.big_three?.moon?.[bigThree.moon.sign]?.interpretation ?? chart.interpretations?.planet_in_sign?.[`Moon in ${bigThree.moon.sign}`]}
+                {#if moonInterp}
+                  <dd class="interp">{moonInterp}</dd>
+                {/if}
               {/if}
               <dt>Rising</dt>
               <dd class="placement">{bigThree.rising.sign}</dd>
-              {#if chart.interpretations?.planet_in_sign?.[`Rising in ${bigThree.rising.sign}`]}
-                <dd class="interp">{chart.interpretations.planet_in_sign[`Rising in ${bigThree.rising.sign}`]}</dd>
-              {:else if chart.interpretations?.planet_in_sign?.[`Ascendant in ${bigThree.rising.sign}`]}
-                <dd class="interp">{chart.interpretations.planet_in_sign[`Ascendant in ${bigThree.rising.sign}`]}</dd>
+              {#if chart.interpretations?.big_three?.ascendant?.[bigThree.rising.sign]?.interpretation ?? chart.interpretations?.planet_in_sign?.[`Rising in ${bigThree.rising.sign}`] ?? chart.interpretations?.planet_in_sign?.[`Ascendant in ${bigThree.rising.sign}`] ?? chart.interpretations?.rising_sign_interpretation}
+                <dd class="interp">{chart.interpretations?.big_three?.ascendant?.[bigThree.rising.sign]?.interpretation ?? chart.interpretations?.planet_in_sign?.[`Rising in ${bigThree.rising.sign}`] ?? chart.interpretations?.planet_in_sign?.[`Ascendant in ${bigThree.rising.sign}`] ?? chart.interpretations?.rising_sign_interpretation}</dd>
               {/if}
             </dl>
           </div>
@@ -194,18 +199,13 @@ import {
           {:else if currentSlide.kind === "planets_in_houses"}
             <div class="slide-content planets-in-houses-content">
               {#if currentSlide.planetInHouse}
-                <p class="planet-house-label">
-                  {currentSlide.planetInHouse.planet} in House {currentSlide.planetInHouse.house}
-                </p>
-                {#if chart.interpretations?.planet_in_house}
-                  {@const key = `${currentSlide.planetInHouse.planet} in House ${currentSlide.planetInHouse.house}`}
-                  {#if chart.interpretations.planet_in_house[key]}
-                    <p class="interpretation">{chart.interpretations.planet_in_house[key]}</p>
-                  {:else}
-                    <p class="placeholder-note">[Interpretation data: planet-in-house for this combination]</p>
-                  {/if}
+                {@const pi = currentSlide.planetInHouse}
+                {@const interp = getPlanetInHouseInterpretation(pi.planet, pi.house, chart.interpretations)}
+                <p class="planet-house-label">{pi.planet} in House {pi.house}</p>
+                {#if interp}
+                  <p class="interpretation">{interp}</p>
                 {:else}
-                  <p class="placeholder-note">[Interpretation data: planet-in-house]</p>
+                  <p class="placeholder-note">[Interpretation data: planet-in-house for this combination]</p>
                 {/if}
               {/if}
             </div>
@@ -277,15 +277,13 @@ import {
               {#if chart.aspects.length > 0}
                 <ul class="aspect-list">
                   {#each chart.aspects as a}
+                    {@const interp = getAspectInterpretation(a, chart.interpretations)}
                     <li>
                       {a.planet1} – {a.planet2}
                       <span class="aspect-type">{a.type}</span>
                       {a.orb}°
-                      {#if chart.interpretations?.aspects}
-                        {@const key = `${a.planet1} ${a.type} ${a.planet2}`}
-                        {#if chart.interpretations.aspects[key]}
-                          <p class="aspect-interp">{chart.interpretations.aspects[key]}</p>
-                        {/if}
+                      {#if interp}
+                        <p class="aspect-interp">{interp}</p>
                       {/if}
                     </li>
                   {/each}

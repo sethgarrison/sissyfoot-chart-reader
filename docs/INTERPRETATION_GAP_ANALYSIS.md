@@ -76,7 +76,7 @@ Comparison of the server's complete interpretation model with the frontend imple
 | **Retrograde** (new) | `retrograde_planets` + `retrograde_interpretations` |
 | Element Overview | `houses_overview.by_element` (count, signs) + `modality_element_distribution` (e.g. `element_fire_dominant`, `element_balanced`, `element_lacking_X`) |
 | Modality Overview | `houses_overview.by_quality` + `modality_element_distribution` (`quality_X_dominant`, `quality_balanced`) |
-| Aspects | `chart.aspects` + `interpretations.aspects` (key: `"Planet1 aspect_type Planet2"`) |
+| Aspects | `chart.aspects` (each with `interpretation`) + `aspects_by_category` fallback |
 | Interesting Findings | Could merge: distribution spread keys, retrograde emphasis, etc. |
 
 ---

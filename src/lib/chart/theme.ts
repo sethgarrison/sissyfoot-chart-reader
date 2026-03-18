@@ -49,13 +49,14 @@ export interface ChartTheme {
     dotColors?: Partial<Record<string, number>>;
   };
 
-  /** Aspect lines (conjunction, opposition, trine, square, sextile) */
+  /** Aspect lines (conjunction, opposition, trine, square, sextile, quincunx) */
   aspects: {
     conjunction: number;
     opposition: number;
     trine: number;
     square: number;
     sextile: number;
+    quincunx: number;
     default: number;
   };
 }
@@ -78,6 +79,7 @@ export const PLANET_NAMES = [
   "Uranus",
   "Neptune",
   "Pluto",
+  "Chiron",
 ] as const;
 
 /** Default theme: Traditional white chart with black lines */
@@ -135,6 +137,7 @@ export const DEFAULT_CHART_THEME: ChartTheme = {
       Uranus: 0x00ced1,   // Aqua
       Neptune: 0x1e90ff,  // Dodger Blue
       Pluto: 0x4b0082,    // Indigo
+      Chiron: 0x6b7280,   // Gray (wounded healer)
     },
   },
   aspects: {
@@ -143,6 +146,7 @@ export const DEFAULT_CHART_THEME: ChartTheme = {
     trine: 0x16a34a,       // green — harmony
     square: 0xea580c,       // orange — challenge
     sextile: 0x2563eb,      // blue — opportunity
+    quincunx: 0x7c3aed,     // violet — adjustment
     default: 0x6b7280,
   },
 };

@@ -87,6 +87,7 @@ export const PLANET_ASTRONOMICON: Record<string, string> = {
   Uranus: "X",
   Neptune: "Y",
   Pluto: "Z",
+  Chiron: "Ch", // Fallback; Astronomicon may have a glyph
 };
 
 export function planetGlyph(planet: string): string {
@@ -101,6 +102,7 @@ export function planetGlyph(planet: string): string {
     Uranus: "\u2645",
     Neptune: "\u2646",
     Pluto: "\u2647",
+    Chiron: "\u26B7", // Unicode astrological symbol for Chiron
   };
   return glyphs[planet] ?? planet.slice(0, 2);
 }
