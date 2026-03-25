@@ -123,15 +123,16 @@ export class ChartRenderer {
     this.applyZoomPan();
   }
 
-  /** Zoom and pan to focus on a specific planet. */
+  /** Zoom and pan to focus on a specific planet (matches planet ring at 0.45 × outerRadius). */
   focusOnPlanet(planet: PlanetPlacement): void {
     if (!this.chart) return;
-    const planetRadius = this.outerRadius * 0.45;
+    const d = this.outerRadius * 0.45;
     const totalDeg = this.signTotalDegrees(planet.sign, planet.degrees, planet.minutes);
     const angle = this.eclipticToAngle(totalDeg);
-    this.panX = -Math.cos(angle) * planetRadius;
-    this.panY = -Math.sin(angle) * planetRadius;
-    this.zoomLevel = 2.5;
+    const s = 2.5;
+    this.zoomLevel = s;
+    this.panX = -Math.cos(angle) * d * s;
+    this.panY = -Math.sin(angle) * d * s;
     this.applyZoomPan();
   }
 
@@ -335,7 +336,7 @@ export class ChartRenderer {
         container.addChild(tooltip);
       });
       container.on("pointerout", () => {
-        text.style.fill = "#" + labelColor.toString(16).padStart(6, "0");
+        text.style.fill = "#" + signColor(sign).toString(16).padStart(6, "0");
         text.scale.set(1);
         if (tooltip) {
           container.removeChild(tooltip);
@@ -598,7 +599,7 @@ export class ChartRenderer {
 
       const label = new Text({
         text: this.lunarNodeGlyph(n.node),
-        style: new TextStyle({ ...style }),
+        style,
       });
       label.anchor.set(0.5);
       label.x = 0;

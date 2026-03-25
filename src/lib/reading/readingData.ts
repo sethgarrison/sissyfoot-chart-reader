@@ -140,7 +140,8 @@ export function buildReadingSlides(chart: NatalChart): ReadingSlide[] {
   }
 
   // 5. Retrograde (only if any retrograde planets)
-  const retrogradePlanets = chart.interpretations?.retrograde_planets ?? chart.planets.filter((p) => p.retrograde).map((p) => p.planet);
+  const retrogradePlanets =
+    chart.interpretation?.retrograde_planets ?? chart.planets.filter((p) => p.retrograde).map((p) => p.planet);
   if (retrogradePlanets.length > 0) {
     slides.push({ kind: "retrograde", title: SLIDE_LABELS.retrograde, index: idx++ });
   }

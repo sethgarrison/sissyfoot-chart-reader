@@ -8,14 +8,42 @@ import {
   getAspectInterpretation,
   aspectCategoryToServerKey,
   getAspectCategory,
+  normalizeChartHouse,
+  parseHouseInterpretation,
   SAMPLE_CHART,
 } from "./reading";
 import { signTotalDegrees } from "../analysis/chartAnalysis";
 import { ZODIAC_SIGNS } from "./zodiac";
+import type { ChartAPIResponse } from "../types/data";
+import { emptyChartData } from "../types/data";
+
+function wrapChartData(
+  base: Omit<ChartAPIResponse, "chart_data"> & {
+    planets: ChartAPIResponse["chart_data"]["planets"];
+    houses: ChartAPIResponse["chart_data"]["houses"];
+    aspects?: ChartAPIResponse["chart_data"]["aspects"];
+  }
+): ChartAPIResponse {
+  return {
+    name: base.name,
+    birth_datetime: base.birth_datetime,
+    latitude: base.latitude,
+    longitude: base.longitude,
+    sun_sign: base.sun_sign,
+    moon_sign: base.moon_sign,
+    rising_sign: base.rising_sign,
+    chart_data: {
+      ...emptyChartData(),
+      planets: base.planets,
+      houses: base.houses,
+      aspects: base.aspects ?? [],
+    },
+  };
+}
 
 describe("chartFromApiResponse", () => {
   it("maps API response to NatalChart", () => {
-    const api = {
+    const api = wrapChartData({
       name: "Test",
       birth_datetime: "1990-06-15T14:30",
       latitude: 40.7128,
@@ -41,7 +69,7 @@ describe("chartFromApiResponse", () => {
         { number: 12, sign: "Virgo", degree: 0, abs_degree: 150 },
       ],
       aspects: [],
-    };
+    });
 
     const chart = chartFromApiResponse(api);
 
@@ -56,7 +84,7 @@ describe("chartFromApiResponse", () => {
 
   it("extracts ascendant from house 1 when available", () => {
     const signOrder = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
-    const api = {
+    const api = wrapChartData({
       name: null,
       birth_datetime: "2000-01-01T12:00",
       latitude: 0,
@@ -72,7 +100,7 @@ describe("chartFromApiResponse", () => {
         abs_degree: i === 0 ? 15.5 : i * 30,
       })),
       aspects: [],
-    };
+    });
 
     const chart = chartFromApiResponse(api);
     expect(chart.ascendant.sign).toBe("Aries");
@@ -81,7 +109,7 @@ describe("chartFromApiResponse", () => {
   });
 
   it("includes Chiron when present in API", () => {
-    const api = {
+    const api = wrapChartData({
       name: null,
       birth_datetime: "1990-06-15T00:00",
       latitude: 0,
@@ -100,11 +128,44 @@ describe("chartFromApiResponse", () => {
         abs_degree: i * 30,
       })),
       aspects: [],
-    };
+    });
 
     const chart = chartFromApiResponse(api);
     expect(chart.planets.map((p) => p.planet)).toContain("Sun");
     expect(chart.planets.map((p) => p.planet)).toContain("Chiron");
+  });
+});
+
+describe("normalizeChartHouse", () => {
+  it("accepts integers 1–12", () => {
+    expect(normalizeChartHouse(1)).toBe(1);
+    expect(normalizeChartHouse(12)).toBe(12);
+    expect(normalizeChartHouse(0)).toBeNull();
+    expect(normalizeChartHouse(13)).toBeNull();
+  });
+
+  it("accepts numeric strings", () => {
+    expect(normalizeChartHouse("7")).toBe(7);
+    expect(normalizeChartHouse(" 12 ")).toBe(12);
+    expect(normalizeChartHouse("foo")).toBeNull();
+  });
+});
+
+describe("parseHouseInterpretation", () => {
+  it("parses string house indices in per_house", () => {
+    const hi = {
+      per_house: [{ house: "9", sign_on_cusp: "Gemini", planets: ["Sun"], planet_interpretations: {} }],
+    };
+    const { perHouse } = parseHouseInterpretation(hi);
+    expect(perHouse).toHaveLength(1);
+    expect(perHouse[0].house).toBe(9);
+  });
+
+  it("drops per_house rows with invalid house", () => {
+    const hi = {
+      per_house: [{ house: "0", sign_on_cusp: "Aries", planets: [], planet_interpretations: {} }],
+    };
+    expect(parseHouseInterpretation(hi).perHouse).toHaveLength(0);
   });
 });
 
@@ -154,22 +215,8 @@ describe("getAspectInterpretation", () => {
     expect(getAspectInterpretation(aspect, undefined)).toBe(aspect.interpretation);
   });
 
-  it("falls back to aspects_by_category when aspect has no interpretation", () => {
-    const interp = {
-      aspects_by_category: { stressful: "Stressful aspects bring challenge." },
-    };
-    expect(getAspectInterpretation({ planet1: "Sun", planet2: "Moon", type: "square" }, interp)).toBe(
-      "Stressful aspects bring challenge."
-    );
-  });
-
-  it("falls back to aspects_by_category using server key easy-flowing", () => {
-    const interp = {
-      aspects_by_category: { "easy-flowing": "Easy-flowing aspects support harmony." },
-    };
-    expect(getAspectInterpretation({ planet1: "Venus", planet2: "Mars", type: "sextile" }, interp)).toBe(
-      "Easy-flowing aspects support harmony."
-    );
+  it("returns undefined when aspect has no interpretation text", () => {
+    expect(getAspectInterpretation({ planet1: "Sun", planet2: "Moon", type: "square" }, undefined)).toBeUndefined();
   });
 });
 

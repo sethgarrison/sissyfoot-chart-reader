@@ -3,7 +3,8 @@
  * Fetches natal chart data from the sissyfoot-astrological-api.
  */
 
-import { chartFromApiResponse, type ChartApiResponse, type NatalChart } from "../models/reading";
+import { chartFromApiResponse, type NatalChart } from "../models/reading";
+import type { ChartAPIResponse } from "../types/data";
 
 const API_BASE = "https://sissyfoot-astrological-api.onrender.com";
 
@@ -87,7 +88,7 @@ export async function fetchChart(params: ChartApiParams): Promise<NatalChart> {
     const text = await res.text();
     throw new Error(`Chart API error ${res.status}: ${text}`);
   }
-  const api: ChartApiResponse = await res.json();
+  const api = (await res.json()) as ChartAPIResponse;
   return chartFromApiResponse(api);
 }
 
@@ -95,7 +96,7 @@ export async function fetchChart(params: ChartApiParams): Promise<NatalChart> {
  * Fetch raw chart JSON from the API (no transformation).
  * Useful for debugging and inspecting server response structure.
  */
-export async function fetchChartRaw(params: ChartApiParams): Promise<ChartApiResponse> {
+export async function fetchChartRaw(params: ChartApiParams): Promise<ChartAPIResponse> {
   const search = buildChartSearchParams(params);
   const res = await fetch(`${API_BASE}/chart?${search}`);
   if (!res.ok) {
@@ -108,7 +109,7 @@ export async function fetchChartRaw(params: ChartApiParams): Promise<ChartApiRes
 /**
  * Fetch raw reading JSON by identifier (no transformation).
  */
-export async function fetchReadingByIdRaw(identifier: string): Promise<ChartApiResponse> {
+export async function fetchReadingByIdRaw(identifier: string): Promise<ChartAPIResponse> {
   const encoded = encodeURIComponent(identifier);
   const res = await fetch(`${API_BASE}/readings/${encoded}`);
   if (!res.ok) {
@@ -149,6 +150,6 @@ export async function fetchReadingById(identifier: string): Promise<NatalChart> 
     const text = await res.text();
     throw new Error(`Readings API error ${res.status}: ${text}`);
   }
-  const api: ChartApiResponse = await res.json();
+  const api = (await res.json()) as ChartAPIResponse;
   return chartFromApiResponse(api);
 }

@@ -251,7 +251,7 @@
       {@const tickLen = signRingHeight}
       {@const labelRadius = r + signRingHeight + Math.max(14, r * 0.04)}
       {#each [["ASC", ascDeg], ["MC", mcDeg], ["DSC", dscDeg]] as [label, totalDeg]}
-        {@const a = angle(totalDeg)}
+        {@const a = angle(typeof totalDeg === "number" ? totalDeg : Number(totalDeg))}
         <line
           x1={cx + Math.cos(a) * r}
           y1={cy + Math.sin(a) * r}

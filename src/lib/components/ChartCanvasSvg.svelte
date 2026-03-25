@@ -17,6 +17,8 @@
   let panX = $state(0);
   let panY = $state(0);
   let showLegend = $state(true);
+  /** Set when a planet click triggers zoom-to-center; drives the close (X) control vs zoom-out. */
+  let focusedPlanet = $state<PlanetPlacement | null>(null);
 
   interface Props {
     chart?: NatalChart | null;
@@ -38,21 +40,30 @@
     scale = 1;
     panX = 0;
     panY = 0;
+    focusedPlanet = null;
   }
 
   function focusOut() {
     scale = Math.max(MIN_ZOOM, scale * 0.7);
   }
 
+  /**
+   * Centers the planet glyph in the viewport. Matches ChartSvg: translate(cx+pan) scale(s) translate(-cx,-cy),
+   * so pan must include the zoom factor for the planet offset from chart center.
+   */
   function focusOnPlanet(planet: PlanetPlacement) {
     if (!chart) return;
     const r = Math.min(width, height) * 0.42;
-    const planetRadius = r * 0.45;
+    const signRingHeight = r * 0.12;
+    const innerRadius = r - signRingHeight;
+    const planetGlyphRadius = (innerRadius + r) / 2;
     const totalDeg = signTotalDegrees(planet.sign, planet.degrees, planet.minutes);
     const a = eclipticToAngle(totalDeg, chart);
-    panX = -Math.cos(a) * planetRadius;
-    panY = -Math.sin(a) * planetRadius;
-    scale = 2.5;
+    const s = 2.5;
+    scale = s;
+    panX = -Math.cos(a) * planetGlyphRadius * s;
+    panY = -Math.sin(a) * planetGlyphRadius * s;
+    focusedPlanet = planet;
   }
 
   function handlePlanetSelect(planet: PlanetPlacement) {
@@ -139,6 +150,17 @@
   {#if showLegend}
     <ChartLegend />
   {/if}
+  {#if focusedPlanet}
+    <button
+      type="button"
+      class="control-btn chart-focus-close"
+      onclick={resetView}
+      title="Show full chart"
+      aria-label="Close planet zoom; show full chart"
+    >
+      ✕
+    </button>
+  {/if}
   <div class="chart-controls">
     <button
       type="button"
@@ -149,9 +171,11 @@
     >
       {showLegend ? "Legend ▼" : "Legend ▶"}
     </button>
-    <button type="button" class="control-btn" onclick={focusOut} title="Zoom out to see interpretations">
-      Zoom out
-    </button>
+    {#if !focusedPlanet}
+      <button type="button" class="control-btn" onclick={focusOut} title="Zoom out">
+        Zoom out
+      </button>
+    {/if}
   </div>
 </div>
 
@@ -181,6 +205,22 @@
     display: flex;
     gap: 0.5rem;
     z-index: 5;
+  }
+
+  .chart-focus-close {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 6;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    line-height: 1;
+    font-weight: 500;
   }
 
   .control-btn {

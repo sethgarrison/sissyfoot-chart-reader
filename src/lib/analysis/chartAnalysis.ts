@@ -3,7 +3,7 @@
  * Use these to verify data structure and validate drawing assumptions.
  */
 
-import type { ChartApiResponse } from "../models/reading";
+import type { ChartAPIResponse } from "../types/data";
 import { ZODIAC_SIGNS } from "../models/zodiac";
 
 const SIGN_ORDER = ZODIAC_SIGNS.map((s) => s.name);
@@ -52,15 +52,16 @@ export function signTotalDegrees(sign: string, degrees: number, minutes: number)
 }
 
 /** Analyze a raw API response and produce a report. */
-export function analyzeChartApiResponse(api: ChartApiResponse): ChartAnalysisReport {
-  const houses = api.houses ?? [];
-  const planets = api.planets ?? [];
+export function analyzeChartApiResponse(api: ChartAPIResponse): ChartAnalysisReport {
+  const data = api.chart_data;
+  const houses = data.houses ?? [];
+  const planets = data.planets ?? [];
 
   const raw = {
     houseCount: houses.length,
     planetCount: planets.length,
-    aspectCount: (api.aspects ?? []).length,
-    lunarNodeCount: (api.lunar_nodes ?? []).length,
+    aspectCount: (data.aspects ?? []).length,
+    lunarNodeCount: (data.lunar_nodes ?? []).length,
     houseCusps: houses.map((h) => ({
       house: h.number,
       sign: h.sign,

@@ -11,6 +11,10 @@
     getBigThree,
   } from "../reading";
   import type { ReadingSlide } from "../reading/slideTypes";
+  import type { ElementDistributionData, QualityDistributionData } from "../types/data";
+
+  const ELEMENT_BUCKET_KEYS: (keyof ElementDistributionData)[] = ["fire", "earth", "air", "water"];
+  const QUALITY_BUCKET_KEYS: (keyof QualityDistributionData)[] = ["cardinal", "fixed", "mutable"];
 
   interface Props {
     chart: NatalChart;
@@ -23,31 +27,37 @@
   const currentSlide = $derived(slides[currentIndex] ?? slides[0]);
   const totalSlides = $derived(slides.length);
 
-  /** Use API by_element when available, else compute from planets */
+  /** Element counts from API `chart_data` (geometry bucket), else computed from placements */
   const elements = $derived(
-    chart.interpretations?.by_element
+    chart.chartData?.by_element
       ? {
-          fire: chart.interpretations.by_element.fire?.count ?? 0,
-          earth: chart.interpretations.by_element.earth?.count ?? 0,
-          air: chart.interpretations.by_element.air?.count ?? 0,
-          water: chart.interpretations.by_element.water?.count ?? 0,
+          fire: chart.chartData.by_element.fire.count,
+          earth: chart.chartData.by_element.earth.count,
+          air: chart.chartData.by_element.air.count,
+          water: chart.chartData.by_element.water.count,
         }
       : computeElementCounts(chart)
   );
-  /** Use API by_quality when available, else compute */
   const modalities = $derived(
-    chart.interpretations?.by_quality
+    chart.chartData?.by_quality
       ? {
-          cardinal: chart.interpretations.by_quality.cardinal?.count ?? 0,
-          fixed: chart.interpretations.by_quality.fixed?.count ?? 0,
-          mutable: chart.interpretations.by_quality.mutable?.count ?? 0,
+          cardinal: chart.chartData.by_quality.cardinal.count,
+          fixed: chart.chartData.by_quality.fixed.count,
+          mutable: chart.chartData.by_quality.mutable.count,
         }
       : computeModalityCounts(chart)
   );
-  /** From chart.houses_overview or interpretations */
-  const byElement = $derived(chart.houses_overview?.by_element ?? chart.interpretations?.by_element);
-  const byQuality = $derived(chart.houses_overview?.by_quality ?? chart.interpretations?.by_quality);
-  const modalityElementDist = $derived(chart.interpretations?.modality_element_distribution ?? {});
+  const byElement = $derived(chart.chartData?.by_element);
+  const byQuality = $derived(chart.chartData?.by_quality);
+  const modalityElementDist = $derived.by(() => {
+    const ctx = chart.interpretation?.context;
+    if (!ctx) return {} as Record<string, string>;
+    return {
+      [ctx.spatial_distribution.key]: ctx.spatial_distribution.interpretation,
+      [ctx.quality_distribution.key]: ctx.quality_distribution.interpretation,
+      [ctx.modality_distribution.key]: ctx.modality_distribution.interpretation,
+    };
+  });
   const elementDistInterps = $derived(Object.entries(modalityElementDist).filter(([k]) => k.startsWith("element_")));
   const qualityDistInterps = $derived(Object.entries(modalityElementDist).filter(([k]) => k.startsWith("quality_")));
   const hemispheres = $derived(computeHemispheres(chart));
@@ -55,9 +65,11 @@
   const planetsByHouse = $derived(computePlanetsByHouse(chart));
   const bigThree = $derived(getBigThree(chart));
   const retrogradePlanets = $derived(
-    chart.interpretations?.retrograde_planets ?? chart.planets.filter((p) => p.retrograde).map((p) => p.planet)
+    chart.interpretation?.retrograde_planets ?? chart.planets.filter((p) => p.retrograde).map((p) => p.planet)
   );
-  const retrogradeInterp = $derived(chart.interpretations?.retrograde_interpretations);
+  const retrogradeInterp = $derived(
+    chart.interpretation?.retrograde_interpretations as Record<string, string> | undefined
+  );
 
   function next() {
     if (currentIndex < totalSlides - 1) currentIndex++;
@@ -98,7 +110,7 @@
                   : "—"}
               </dd>
               {#if bigThree.sun}
-                {@const sunInterp = chart.interpretations?.big_three?.sun?.[bigThree.sun.sign]?.interpretation ?? chart.interpretations?.planet_in_sign?.[`Sun in ${bigThree.sun.sign}`]}
+                {@const sunInterp = chart.interpretation?.big_three?.sun?.interpretation}
                 {#if sunInterp}
                   <dd class="interp">{sunInterp}</dd>
                 {/if}
@@ -110,15 +122,15 @@
                   : "—"}
               </dd>
               {#if bigThree.moon}
-                {@const moonInterp = chart.interpretations?.big_three?.moon?.[bigThree.moon.sign]?.interpretation ?? chart.interpretations?.planet_in_sign?.[`Moon in ${bigThree.moon.sign}`]}
+                {@const moonInterp = chart.interpretation?.big_three?.moon?.interpretation}
                 {#if moonInterp}
                   <dd class="interp">{moonInterp}</dd>
                 {/if}
               {/if}
               <dt>Rising</dt>
               <dd class="placement">{bigThree.rising.sign}</dd>
-              {#if chart.interpretations?.big_three?.ascendant?.[bigThree.rising.sign]?.interpretation ?? chart.interpretations?.planet_in_sign?.[`Rising in ${bigThree.rising.sign}`] ?? chart.interpretations?.planet_in_sign?.[`Ascendant in ${bigThree.rising.sign}`] ?? chart.interpretations?.rising_sign_interpretation}
-                <dd class="interp">{chart.interpretations?.big_three?.ascendant?.[bigThree.rising.sign]?.interpretation ?? chart.interpretations?.planet_in_sign?.[`Rising in ${bigThree.rising.sign}`] ?? chart.interpretations?.planet_in_sign?.[`Ascendant in ${bigThree.rising.sign}`] ?? chart.interpretations?.rising_sign_interpretation}</dd>
+              {#if chart.interpretation?.big_three?.ascendant?.interpretation}
+                <dd class="interp">{chart.interpretation.big_three.ascendant.interpretation}</dd>
               {/if}
             </dl>
           </div>
@@ -128,14 +140,10 @@
               <p class="placeholder-note">
                 [Interpretation data: chart shape, hemispheres, quarters]
               </p>
-              {#if chart.interpretations?.chart_shape}
+              {#if chart.interpretation?.context?.shape}
                 <div class="shape-section">
-                  {#if chart.interpretations.chart_shape.primary}
-                    <p><strong>{chart.interpretations.chart_shape.primary}</strong></p>
-                  {/if}
-                  {#if chart.interpretations.chart_shape.interpretation}
-                    <p>{chart.interpretations.chart_shape.interpretation}</p>
-                  {/if}
+                  <p><strong>{chart.interpretation.context.shape.key}</strong></p>
+                  <p>{chart.interpretation.context.shape.interpretation}</p>
                 </div>
               {/if}
               <div class="distribution-grid">
@@ -154,14 +162,6 @@
 
           {:else if currentSlide.kind === "house_overview"}
             <div class="slide-content house-overview-content">
-              {#if chart.interpretations?.houses_overview}
-                {#each Object.entries(chart.interpretations.houses_overview) as [key, text]}
-                  <div class="house-overview-block">
-                    <h3 class="house-overview-key">{key}</h3>
-                    <p class="house-overview-text">{text}</p>
-                  </div>
-                {/each}
-              {/if}
               <ul class="house-list">
                 {#each [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] as h}
                   {@const planetsInHouse = planetsByHouse.get(h) ?? []}
@@ -200,7 +200,7 @@
             <div class="slide-content planets-in-houses-content">
               {#if currentSlide.planetInHouse}
                 {@const pi = currentSlide.planetInHouse}
-                {@const interp = getPlanetInHouseInterpretation(pi.planet, pi.house, chart.interpretations)}
+                {@const interp = getPlanetInHouseInterpretation(pi.planet, pi.house, chart.interpretation)}
                 <p class="planet-house-label">{pi.planet} in House {pi.house}</p>
                 {#if interp}
                   <p class="interpretation">{interp}</p>
@@ -214,7 +214,7 @@
             <div class="slide-content element-overview-content">
               {#if byElement}
                 <ul class="element-list">
-                  {#each ["fire", "earth", "air", "water"] as key}
+                  {#each ELEMENT_BUCKET_KEYS as key}
                     {@const entry = byElement[key]}
                     {#if entry}
                       <li class="element-item">
@@ -247,7 +247,7 @@
             <div class="slide-content modality-overview-content">
               {#if byQuality}
                 <ul class="modality-list">
-                  {#each ["cardinal", "fixed", "mutable"] as key}
+                  {#each QUALITY_BUCKET_KEYS as key}
                     {@const entry = byQuality[key]}
                     {#if entry}
                       <li class="modality-item">
@@ -277,7 +277,7 @@
               {#if chart.aspects.length > 0}
                 <ul class="aspect-list">
                   {#each chart.aspects as a}
-                    {@const interp = getAspectInterpretation(a, chart.interpretations)}
+                    {@const interp = getAspectInterpretation(a, chart.interpretation)}
                     <li>
                       {a.planet1} – {a.planet2}
                       <span class="aspect-type">{a.type}</span>

@@ -1,0 +1,1658 @@
+{
+    "name": "Seth-data-check",
+    "birth_datetime": "1982-02-10T11:02",
+    "latitude": 31.6941,
+    "longitude": -89.1306,
+    "house_system": "whole_sign",
+    "sun_sign": "Aquarius",
+    "moon_sign": "Virgo",
+    "rising_sign": "Taurus",
+    "chart_data": {
+        "aspects": [
+            {
+                "planet1": "Sun",
+                "planet2": "Mars",
+                "aspect": "trine",
+                "aspect_degrees": 120,
+                "orbit": 3.0569,
+                "movement": "Separating"
+            },
+            {
+                "planet1": "Sun",
+                "planet2": "Saturn",
+                "aspect": "trine",
+                "aspect_degrees": 120,
+                "orbit": 0.5141,
+                "movement": "Applying",
+                "type": null,
+                "interpretation": "Ease and flow between energies. Natural talent or harmony in the areas involved.",
+                "source": "default",
+                "is_placeholder": false
+            },
+            {
+                "planet1": "Sun",
+                "planet2": "Neptune",
+                "aspect": "sextile",
+                "aspect_degrees": 60,
+                "orbit": 4.8069,
+                "movement": "Applying",
+                "type": null,
+                "interpretation": "Cooperative, supportive connection. Opportunities that arise with modest effort.",
+                "source": "default",
+                "is_placeholder": false
+            },
+            {
+                "planet1": "Sun",
+                "planet2": "Pluto",
+                "aspect": "trine",
+                "aspect_degrees": 120,
+                "orbit": 5.251,
+                "movement": "Applying",
+                "type": null,
+                "interpretation": "Ease and flow between energies. Natural talent or harmony in the areas involved.",
+                "source": "default",
+                "is_placeholder": false
+            },
+            {
+                "planet1": "Sun",
+                "planet2": "Chiron",
+                "aspect": "square",
+                "aspect_degrees": 90,
+                "orbit": 3.6228,
+                "movement": "Separating",
+                "type": null,
+                "interpretation": "Friction and challenge that can drive action. Often requires effort to harness constructively.",
+                "source": "default",
+                "is_placeholder": false
+            },
+            {
+                "planet1": "Sun",
+                "planet2": "Ascendant",
+                "aspect": "square",
+                "aspect_degrees": 90,
+                "orbit": 0.8466,
+                "movement": "Applying",
+                "type": null,
+                "interpretation": "Friction and challenge that can drive action. Often requires effort to harness constructively.",
+                "source": "default",
+                "is_placeholder": false
+            },
+            {
+                "planet1": "Sun",
+                "planet2": "Descendant",
+                "aspect": "square",
+                "aspect_degrees": 90,
+                "orbit": 0.8466,
+                "movement": "Applying",
+                "type": null,
+                "interpretation": "Friction and challenge that can drive action. Often requires effort to harness constructively.",
+                "source": "default",
+                "is_placeholder": false
+            },
+            {
+                "planet1": "Moon",
+                "planet2": "Venus",
+                "aspect": "trine",
+                "aspect_degrees": 120,
+                "orbit": 1.1451,
+                "movement": "Applying",
+                "type": null,
+                "interpretation": "Ease and flow between energies. Natural talent or harmony in the areas involved.",
+                "source": "default",
+                "is_placeholder": false
+            },
+            {
+                "planet1": "Moon",
+                "planet2": "Uranus",
+                "aspect": "quintile",
+                "aspect_degrees": 72,
+                "orbit": 0.0791,
+                "movement": "Applying",
+                "type": null,
+                "interpretation": null,
+                "source": null,
+                "is_placeholder": false
+            },
+            {
+                "planet1": "Moon",
+                "planet2": "Neptune",
+                "aspect": "square",
+                "aspect_degrees": 90,
+                "orbit": 4.2264,
+                "movement": "Applying",
+                "type": null,
+                "interpretation": "Friction and challenge that can drive action. Often requires effort to harness constructively.",
+                "source": "default",
+                "is_placeholder": false
+            },
+            {
+                "planet1": "Moon",
+                "planet2": "Chiron",
+                "aspect": "trine",
+                "aspect_degrees": 120,
+                "orbit": 4.2033,
+                "movement": "Separating",
+                "type": null,
+                "interpretation": "Ease and flow between energies. Natural talent or harmony in the areas involved.",
+                "source": "default",
+                "is_placeholder": false
+            },
+            {
+                "planet1": "Moon",
+                "planet2": "Ascendant",
+                "aspect": "trine",
+                "aspect_degrees": 120,
+                "orbit": 1.4272,
+                "movement": "Applying",
+                "type": null,
+                "interpretation": "Ease and flow between energies. Natural talent or harmony in the areas involved.",
+                "source": "default",
+                "is_placeholder": false
+            },
+            {
+                "planet1": "Moon",
+                "planet2": "Descendant",
+                "aspect": "sextile",
+                "aspect_degrees": 60,
+                "orbit": 1.4272,
+                "movement": "Applying",
+                "type": null,
+                "interpretation": "Cooperative, supportive connection. Opportunities that arise with modest effort.",
+                "source": "default",
+                "is_placeholder": false
+            },
+            {
+                "planet1": "Mercury",
+                "planet2": "Venus",
+                "aspect": "conjunction",
+                "aspect_degrees": 0,
+                "orbit": 9.98,
+                "movement": "Applying",
+                "type": null,
+                "interpretation": "Planets merge their energies; themes reinforce and blend. Intensity depends on the planets involved.",
+                "source": "default",
+                "is_placeholder": false
+            },
+            {
+                "planet1": "Mercury",
+                "planet2": "Uranus",
+                "aspect": "sextile",
+                "aspect_degrees": 60,
+                "orbit": 0.9541,
+                "movement": "Separating",
+                "type": null,
+                "interpretation": "Cooperative, supportive connection. Opportunities that arise with modest effort.",
+                "source": "default",
+                "is_placeholder": false
+            },
+            {
+                "planet1": "Mercury",
+                "planet2": "Medium Coeli",
+                "aspect": "conjunction",
+                "aspect_degrees": 0,
+                "orbit": 1.1355,
+                "movement": "Separating",
+                "type": null,
+                "interpretation": "Planets merge their energies; themes reinforce and blend. Intensity depends on the planets involved.",
+                "source": "default",
+                "is_placeholder": false
+            },
+            {
+                "planet1": "Mercury",
+                "planet2": "Descendant",
+                "aspect": "quintile",
+                "aspect_degrees": 72,
+                "orbit": 0.5522,
+                "movement": "Applying",
+                "type": null,
+                "interpretation": null,
+                "source": null,
+                "is_placeholder": false
+            },
+            {
+                "planet1": "Mercury",
+                "planet2": "Imum Coeli",
+                "aspect": "opposition",
+                "aspect_degrees": 180,
+                "orbit": 1.1355,
+                "movement": "Separating",
+                "type": null,
+                "interpretation": "Dynamic tension between two poles. Integration or awareness of both sides brings growth.",
+                "source": "default",
+                "is_placeholder": false
+            },
+            {
+                "planet1": "Venus",
+                "planet2": "Mars",
+                "aspect": "square",
+                "aspect_degrees": 90,
+                "orbit": 4.7825,
+                "movement": "Applying",
+                "type": null,
+                "interpretation": "Friction and challenge that can drive action. Often requires effort to harness constructively.",
+                "source": "default",
+                "is_placeholder": false
+            },
+            {
+                "planet1": "Venus",
+                "planet2": "Saturn",
+                "aspect": "square",
+                "aspect_degrees": 90,
+                "orbit": 1.2115,
+                "movement": "Separating",
+                "type": null,
+                "interpretation": "Friction and challenge that can drive action. Often requires effort to harness constructively.",
+                "source": "default",
+                "is_placeholder": false
+            },
+            {
+                "planet1": "Venus",
+                "planet2": "Pluto",
+                "aspect": "square",
+                "aspect_degrees": 90,
+                "orbit": 3.5254,
+                "movement": "Applying",
+                "type": null,
+                "interpretation": "Friction and challenge that can drive action. Often requires effort to harness constructively.",
+                "source": "default",
+                "is_placeholder": false
+            },
+            {
+                "planet1": "Venus",
+                "planet2": "Chiron",
+                "aspect": "trine",
+                "aspect_degrees": 120,
+                "orbit": 5.3484,
+                "movement": "Applying",
+                "type": null,
+                "interpretation": "Ease and flow between energies. Natural talent or harmony in the areas involved.",
+                "source": "default",
+                "is_placeholder": false
+            },
+            {
+                "planet1": "Venus",
+                "planet2": "Ascendant",
+                "aspect": "trine",
+                "aspect_degrees": 120,
+                "orbit": 2.5722,
+                "movement": "Applying",
+                "type": null,
+                "interpretation": "Ease and flow between energies. Natural talent or harmony in the areas involved.",
+                "source": "default",
+                "is_placeholder": false
+            },
+            {
+                "planet1": "Venus",
+                "planet2": "Descendant",
+                "aspect": "sextile",
+                "aspect_degrees": 60,
+                "orbit": 2.5722,
+                "movement": "Applying",
+                "type": null,
+                "interpretation": "Cooperative, supportive connection. Opportunities that arise with modest effort.",
+                "source": "default",
+                "is_placeholder": false
+            },
+            {
+                "planet1": "Mars",
+                "planet2": "Saturn",
+                "aspect": "conjunction",
+                "aspect_degrees": 0,
+                "orbit": 3.571,
+                "movement": "Applying",
+                "type": null,
+                "interpretation": "Planets merge their energies; themes reinforce and blend. Intensity depends on the planets involved.",
+                "source": "default",
+                "is_placeholder": false
+            },
+            {
+                "planet1": "Mars",
+                "planet2": "Pluto",
+                "aspect": "conjunction",
+                "aspect_degrees": 0,
+                "orbit": 8.3079,
+                "movement": "Applying",
+                "type": null,
+                "interpretation": "Planets merge their energies; themes reinforce and blend. Intensity depends on the planets involved.",
+                "source": "default",
+                "is_placeholder": false
+            },
+            {
+                "planet1": "Mars",
+                "planet2": "Mean Lilith",
+                "aspect": "sextile",
+                "aspect_degrees": 60,
+                "orbit": 3.0077,
+                "movement": "Separating",
+                "type": null,
+                "interpretation": "Cooperative, supportive connection. Opportunities that arise with modest effort.",
+                "source": "default",
+                "is_placeholder": false
+            },
+            {
+                "planet1": "Jupiter",
+                "planet2": "Chiron",
+                "aspect": "opposition",
+                "aspect_degrees": 180,
+                "orbit": 7.9708,
+                "movement": "Applying",
+                "type": null,
+                "interpretation": "Dynamic tension between two poles. Integration or awareness of both sides brings growth.",
+                "source": "default",
+                "is_placeholder": false
+            },
+            {
+                "planet1": "Saturn",
+                "planet2": "Neptune",
+                "aspect": "sextile",
+                "aspect_degrees": 60,
+                "orbit": 4.2928,
+                "movement": "Separating",
+                "type": null,
+                "interpretation": "Cooperative, supportive connection. Opportunities that arise with modest effort.",
+                "source": "default",
+                "is_placeholder": false
+            },
+            {
+                "planet1": "Saturn",
+                "planet2": "Pluto",
+                "aspect": "conjunction",
+                "aspect_degrees": 0,
+                "orbit": 4.7369,
+                "movement": "Separating",
+                "type": null,
+                "interpretation": "Planets merge their energies; themes reinforce and blend. Intensity depends on the planets involved.",
+                "source": "default",
+                "is_placeholder": false
+            },
+            {
+                "planet1": "Uranus",
+                "planet2": "Medium Coeli",
+                "aspect": "sextile",
+                "aspect_degrees": 60,
+                "orbit": 0.1815,
+                "movement": "Separating",
+                "type": null,
+                "interpretation": "Cooperative, supportive connection. Opportunities that arise with modest effort.",
+                "source": "default",
+                "is_placeholder": false
+            },
+            {
+                "planet1": "Uranus",
+                "planet2": "Imum Coeli",
+                "aspect": "trine",
+                "aspect_degrees": 120,
+                "orbit": 0.1815,
+                "movement": "Separating",
+                "type": null,
+                "interpretation": "Ease and flow between energies. Natural talent or harmony in the areas involved.",
+                "source": "default",
+                "is_placeholder": false
+            },
+            {
+                "planet1": "Neptune",
+                "planet2": "Pluto",
+                "aspect": "sextile",
+                "aspect_degrees": 60,
+                "orbit": 0.444,
+                "movement": "Applying",
+                "type": null,
+                "interpretation": "Cooperative, supportive connection. Opportunities that arise with modest effort.",
+                "source": "default",
+                "is_placeholder": false
+            },
+            {
+                "planet1": "Chiron",
+                "planet2": "Ascendant",
+                "aspect": "conjunction",
+                "aspect_degrees": 0,
+                "orbit": 2.7761,
+                "movement": "Separating",
+                "type": null,
+                "interpretation": "Planets merge their energies; themes reinforce and blend. Intensity depends on the planets involved.",
+                "source": "default",
+                "is_placeholder": false
+            },
+            {
+                "planet1": "Chiron",
+                "planet2": "Descendant",
+                "aspect": "opposition",
+                "aspect_degrees": 180,
+                "orbit": 2.7761,
+                "movement": "Separating",
+                "type": null,
+                "interpretation": "Dynamic tension between two poles. Integration or awareness of both sides brings growth.",
+                "source": "default",
+                "is_placeholder": false
+            }
+        ],
+        "planets": [
+            {
+                "name": "Sun",
+                "sign": "Aquarius",
+                "sign_num": 10,
+                "degree": 21.6357,
+                "abs_degree": 321.6357,
+                "house": 10,
+                "retrograde": false,
+                "speed": 1.011408
+            },
+            {
+                "name": "Moon",
+                "sign": "Virgo",
+                "sign_num": 5,
+                "degree": 22.2162,
+                "abs_degree": 172.2162,
+                "house": 5,
+                "retrograde": false,
+                "speed": 13.456468
+            },
+            {
+                "name": "Mercury",
+                "sign": "Aquarius",
+                "sign_num": 10,
+                "degree": 3.3413,
+                "abs_degree": 303.3413,
+                "house": 10,
+                "retrograde": true,
+                "speed": -0.331511
+            },
+            {
+                "name": "Venus",
+                "sign": "Capricorn",
+                "sign_num": 9,
+                "degree": 23.3613,
+                "abs_degree": 293.3613,
+                "house": 9,
+                "retrograde": true,
+                "speed": -0.006096
+            },
+            {
+                "name": "Mars",
+                "sign": "Libra",
+                "sign_num": 6,
+                "degree": 18.5788,
+                "abs_degree": 198.5788,
+                "house": 6,
+                "retrograde": false,
+                "speed": 0.116029
+            },
+            {
+                "name": "Jupiter",
+                "sign": "Scorpio",
+                "sign_num": 7,
+                "degree": 10.0421,
+                "abs_degree": 220.0421,
+                "house": 7,
+                "retrograde": false,
+                "speed": 0.042119
+            },
+            {
+                "name": "Saturn",
+                "sign": "Libra",
+                "sign_num": 6,
+                "degree": 22.1498,
+                "abs_degree": 202.1498,
+                "house": 6,
+                "retrograde": true,
+                "speed": -0.018473
+            },
+            {
+                "name": "Uranus",
+                "sign": "Sagittarius",
+                "sign_num": 8,
+                "degree": 4.2953,
+                "abs_degree": 244.2953,
+                "house": 8,
+                "retrograde": false,
+                "speed": 0.024113
+            },
+            {
+                "name": "Neptune",
+                "sign": "Sagittarius",
+                "sign_num": 8,
+                "degree": 26.4426,
+                "abs_degree": 266.4426,
+                "house": 8,
+                "retrograde": false,
+                "speed": 0.02466
+            },
+            {
+                "name": "Pluto",
+                "sign": "Libra",
+                "sign_num": 6,
+                "degree": 26.8867,
+                "abs_degree": 206.8867,
+                "house": 6,
+                "retrograde": true,
+                "speed": -0.00724
+            },
+            {
+                "name": "Chiron",
+                "sign": "Taurus",
+                "sign_num": 1,
+                "degree": 18.0129,
+                "abs_degree": 48.0129,
+                "house": 1,
+                "retrograde": false,
+                "speed": 0.015606
+            }
+        ],
+        "lunar_nodes": [
+            {
+                "node": "North Node",
+                "sign": "Cancer",
+                "sign_num": 3,
+                "degree": 22.17,
+                "abs_degree": 112.17,
+                "house": 3
+            },
+            {
+                "node": "South Node",
+                "sign": "Capricorn",
+                "sign_num": 9,
+                "degree": 22.17,
+                "abs_degree": 292.17,
+                "house": 9
+            }
+        ],
+        "houses": [
+            {
+                "number": 1,
+                "sign": "Taurus",
+                "degree": 0,
+                "abs_degree": 30
+            },
+            {
+                "number": 2,
+                "sign": "Gemini",
+                "degree": 0,
+                "abs_degree": 60
+            },
+            {
+                "number": 3,
+                "sign": "Cancer",
+                "degree": 0,
+                "abs_degree": 90
+            },
+            {
+                "number": 4,
+                "sign": "Leo",
+                "degree": 0,
+                "abs_degree": 120
+            },
+            {
+                "number": 5,
+                "sign": "Virgo",
+                "degree": 0,
+                "abs_degree": 150
+            },
+            {
+                "number": 6,
+                "sign": "Libra",
+                "degree": 0,
+                "abs_degree": 180
+            },
+            {
+                "number": 7,
+                "sign": "Scorpio",
+                "degree": 0,
+                "abs_degree": 210
+            },
+            {
+                "number": 8,
+                "sign": "Sagittarius",
+                "degree": 0,
+                "abs_degree": 240
+            },
+            {
+                "number": 9,
+                "sign": "Capricorn",
+                "degree": 0,
+                "abs_degree": 270
+            },
+            {
+                "number": 10,
+                "sign": "Aquarius",
+                "degree": 0,
+                "abs_degree": 300
+            },
+            {
+                "number": 11,
+                "sign": "Pisces",
+                "degree": 0,
+                "abs_degree": 330
+            },
+            {
+                "number": 12,
+                "sign": "Aries",
+                "degree": 0,
+                "abs_degree": 0
+            }
+        ],
+        "by_quality": {
+            "cardinal": {
+                "count": 4,
+                "signs": [
+                    "Capricorn",
+                    "Libra"
+                ],
+                "planets": [
+                    "Venus",
+                    "Mars",
+                    "Saturn",
+                    "Pluto"
+                ]
+            },
+            "fixed": {
+                "count": 4,
+                "signs": [
+                    "Aquarius",
+                    "Scorpio",
+                    "Taurus"
+                ],
+                "planets": [
+                    "Sun",
+                    "Mercury",
+                    "Jupiter",
+                    "Chiron"
+                ]
+            },
+            "mutable": {
+                "count": 3,
+                "signs": [
+                    "Virgo",
+                    "Sagittarius"
+                ],
+                "planets": [
+                    "Moon",
+                    "Uranus",
+                    "Neptune"
+                ]
+            }
+        },
+        "by_element": {
+            "fire": {
+                "count": 2,
+                "signs": [
+                    "Sagittarius"
+                ],
+                "planets": [
+                    "Uranus",
+                    "Neptune"
+                ]
+            },
+            "earth": {
+                "count": 3,
+                "signs": [
+                    "Virgo",
+                    "Capricorn",
+                    "Taurus"
+                ],
+                "planets": [
+                    "Moon",
+                    "Venus",
+                    "Chiron"
+                ]
+            },
+            "air": {
+                "count": 5,
+                "signs": [
+                    "Aquarius",
+                    "Libra"
+                ],
+                "planets": [
+                    "Sun",
+                    "Mercury",
+                    "Mars",
+                    "Saturn",
+                    "Pluto"
+                ]
+            },
+            "water": {
+                "count": 1,
+                "signs": [
+                    "Scorpio"
+                ],
+                "planets": [
+                    "Jupiter"
+                ]
+            }
+        },
+        "lunar_phase": {
+            "degrees_between": 210.5805,
+            "phase_name": "Waning Gibbous",
+            "emoji": "🌖"
+        }
+    },
+    "interpretations": {
+        "big_three": {
+            "sun": {
+                "sign": "Aquarius",
+                "archetypes_balanced": "the genius, the humanitarian",
+                "archetypes_unbalanced": "the contrarian, the robot",
+                "journey": "experiencing ultimate freedom",
+                "gifts": "freedom, originality, inventiveness, progressiveness, humanitarianism",
+                "challenges": "aloofness, unpredictability, stubbornness, contrarianism, perversion",
+                "interpretation": "Independent, innovative, humanitarian, intellectual and unique"
+            },
+            "moon": {
+                "sign": "Virgo",
+                "nature": "practical, humble, helpul, critifical",
+                "sources_of_contentment": "organization, serving others, safety, analyzing feelings",
+                "keywords": null,
+                "interpretation": "Practical emotions, worries easily, needs order and routine"
+            },
+            "ascendant": {
+                "sign": "Taurus",
+                "impression": "attractive, dependable, slow, sensual",
+                "appearance": "serene eyes, delicate jawlines",
+                "childhood": "serene, calm, patient",
+                "balance": "letting go",
+                "interpretation": "Calm demeanor, appears reliable and grounded, steady presence"
+            }
+        },
+        "context": {
+            "shape": {
+                "key": "bowl",
+                "interpretation": "Planets occupy approximately half the chart (180 degrees or less), suggesting a self-contained nature with a strong sense of mission."
+            },
+            "concentration": {
+                "hemisphere_northern": "The bottom half of the circle, called the northern hemisphere, emphasizes self and family. The keyword for this half of the horoscope is inner aim. People with a majority of planets in this hemisphere are primarily interested in personal pursuits and pleasures, inner goals and satisfactions. This does not mean they don't achieve in life; it means their primary motivation for achievement is to satisfy themselves.",
+                "hemisphere_western": "The right half of the circle, called the western hemisphere, represents the impact of the world on a person. The keyword for people who have many planets in this half of the horoscope is that they are molded by circumstances. These people are influenced by their surroundings and by the people in their lives; each experience becomes a part of their personality.",
+                "quadrant_spread": "Quadrant Spread (planets distributed across regions): [Add your interpretation here]"
+            },
+            "modality_element": {
+                "element_air_dominant": "Fire/Earth/Air/Water emphasis: Air dominant: [Add your interpretation here]",
+                "quality_balanced": "Modality balance: no single quality dominant: [Add your interpretation here]"
+            }
+        },
+        "house_groups": [
+            {
+                "house": 1,
+                "house_keyword": "personality",
+                "sign_on_cusp": "Taurus",
+                "interpretation": {
+                    "house_in_sign": "{entry from house_in_sign_interpretation}"
+                },
+                "planets": [
+                    {
+                        "body": "Chiron",
+                        "sign": "Taurus",
+                        "sign_adverb": "Realistically",
+                        "planet_keyword": "heals",
+                        "synthesis": "heals Realistically",
+                        "retrograde": false,
+                        "aspects": [
+                            {
+                                "aspect": "square",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "interacts stressfully with",
+                                "other_body": "Sun",
+                                "other_sign": "Aquarius",
+                                "other_planet_keyword": "creates",
+                                "other_sign_adverb": "knowingly",
+                                "synthesis": "interacts stressfully with creates knowingly",
+                                "interpretation": "Friction and challenge that can drive action. Often requires effort to harness constructively."
+                                                        },
+                            {
+                                "aspect": "trine",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "combines very easily with",
+                                "other_body": "Moon",
+                                "other_sign": "Virgo",
+                                "other_planet_keyword": "reacts",
+                                "other_sign_adverb": "precisely",
+                                "synthesis": "combines very easily with reacts precisely",
+                                "interpretation": "Ease and flow between energies. Natural talent or harmony in the areas involved.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "trine",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "combines very easily with",
+                                "other_body": "Venus",
+                                "other_sign": "Capricorn",
+                                "other_planet_keyword": "loves",
+                                "other_sign_adverb": "usefully",
+                                "synthesis": "combines very easily with loves usefully",
+                                "interpretation": "Ease and flow between energies. Natural talent or harmony in the areas involved.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "opposition",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "faces and challenges",
+                                "other_body": "Jupiter",
+                                "other_sign": "Scorpio",
+                                "other_planet_keyword": "expands",
+                                "other_sign_adverb": "intensely",
+                                "synthesis": "faces and challenges expands intensely",
+                                "interpretation": "Dynamic tension between two poles. Integration or awareness of both sides brings growth.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "conjunction",
+                                "aspect_type": null,
+                                "aspect_keyphrase": null,
+                                "other_body": "Ascendant",
+                                "other_sign": "",
+                                "other_planet_keyword": null,
+                                "other_sign_adverb": null,
+                                "synthesis": "",
+                                "interpretation": "Planets merge their energies; themes reinforce and blend. Intensity depends on the planets involved.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "opposition",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "faces and challenges",
+                                "other_body": "Descendant",
+                                "other_sign": "",
+                                "other_planet_keyword": null,
+                                "other_sign_adverb": null,
+                                "synthesis": "faces and challenges",
+                                "interpretation": "Dynamic tension between two poles. Integration or awareness of both sides brings growth.",
+                                "is_placeholder": false
+                            }
+                        ],
+                        "interpretation": {
+                            "planet_in_sign": "Chiron in Taurus: [Add your interpretation here]",
+                            "planet_in_house": "Chiron in House 1: [Add your interpretation here]"
+                        }
+                    }
+                ]
+            },
+            {
+                "house": 5,
+                "house_keyword": "creativity",
+                "sign_on_cusp": "Virgo",
+                "placements": [
+                    {
+                        "body": "Moon",
+                        "sign": "Virgo",
+                        "sign_adverb": "precisely",
+                        "planet_keyword": "reacts",
+                        "synthesis": "reacts precisely",
+                        "retrograde": false,
+                        "aspects": [
+                            {
+                                "aspect": "trine",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "combines very easily with",
+                                "other_body": "Venus",
+                                "other_sign": "Capricorn",
+                                "other_planet_keyword": "loves",
+                                "other_sign_adverb": "usefully",
+                                "synthesis": "combines very easily with loves usefully",
+                                "interpretation": "Ease and flow between energies. Natural talent or harmony in the areas involved.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "quintile",
+                                "aspect_type": null,
+                                "aspect_keyphrase": null,
+                                "other_body": "Uranus",
+                                "other_sign": "Sagittarius",
+                                "other_planet_keyword": "invents",
+                                "other_sign_adverb": "far-reachingly",
+                                "synthesis": "",
+                                "interpretation": null,
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "square",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "interacts stressfully with",
+                                "other_body": "Neptune",
+                                "other_sign": "Sagittarius",
+                                "other_planet_keyword": "inspires",
+                                "other_sign_adverb": "far-reachingly",
+                                "synthesis": "interacts stressfully with inspires far-reachingly",
+                                "interpretation": "Friction and challenge that can drive action. Often requires effort to harness constructively.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "trine",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "combines very easily with",
+                                "other_body": "Chiron",
+                                "other_sign": "Taurus",
+                                "other_planet_keyword": "heals",
+                                "other_sign_adverb": "Realistically",
+                                "synthesis": "combines very easily with heals Realistically",
+                                "interpretation": "Ease and flow between energies. Natural talent or harmony in the areas involved.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "trine",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "combines very easily with",
+                                "other_body": "Ascendant",
+                                "other_sign": "",
+                                "other_planet_keyword": null,
+                                "other_sign_adverb": null,
+                                "synthesis": "combines very easily with",
+                                "interpretation": "Ease and flow between energies. Natural talent or harmony in the areas involved.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "sextile",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "combines pleasantly with",
+                                "other_body": "Descendant",
+                                "other_sign": "",
+                                "other_planet_keyword": null,
+                                "other_sign_adverb": null,
+                                "synthesis": "combines pleasantly with",
+                                "interpretation": "Cooperative, supportive connection. Opportunities that arise with modest effort.",
+                                "is_placeholder": false
+                            }
+                        ],
+                        "long": {
+                            "in_sign": "Moon in Virgo: [Add your interpretation here]",
+                            "in_house": "You are impulsive about love and tend to follow your heart rather than your head. You seek out pleasure in life; one of your love affairs is likely to become public knowledge. You may have a child who becomes famous. Good point: romantic and creative imagination. Bad point: overprotective and possessive of lovers and/or children."
+                        }
+                    }
+                ]
+            },
+            {
+                "house": 6,
+                "house_keyword": "work and health",
+                "sign_on_cusp": "Libra",
+                "placements": [
+                    {
+                        "body": "Mars",
+                        "sign": "Libra",
+                        "sign_adverb": "adaptively",
+                        "planet_keyword": "acts",
+                        "synthesis": "acts adaptively",
+                        "retrograde": false,
+                        "aspects": [
+                            {
+                                "aspect": "trine",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "combines very easily with",
+                                "other_body": "Sun",
+                                "other_sign": "Aquarius",
+                                "other_planet_keyword": "creates",
+                                "other_sign_adverb": "knowingly",
+                                "synthesis": "combines very easily with creates knowingly",
+                                "interpretation": "Ease and flow between energies. Natural talent or harmony in the areas involved.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "square",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "interacts stressfully with",
+                                "other_body": "Venus",
+                                "other_sign": "Capricorn",
+                                "other_planet_keyword": "loves",
+                                "other_sign_adverb": "usefully",
+                                "synthesis": "interacts stressfully with loves usefully",
+                                "interpretation": "Friction and challenge that can drive action. Often requires effort to harness constructively.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "conjunction",
+                                "aspect_type": null,
+                                "aspect_keyphrase": null,
+                                "other_body": "Saturn",
+                                "other_sign": "Libra",
+                                "other_planet_keyword": "controls",
+                                "other_sign_adverb": "adaptively",
+                                "synthesis": "controls adaptively",
+                                "interpretation": "Planets merge their energies; themes reinforce and blend. Intensity depends on the planets involved.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "conjunction",
+                                "aspect_type": null,
+                                "aspect_keyphrase": null,
+                                "other_body": "Pluto",
+                                "other_sign": "Libra",
+                                "other_planet_keyword": "transforms",
+                                "other_sign_adverb": "adaptively",
+                                "synthesis": "transforms adaptively",
+                                "interpretation": "Planets merge their energies; themes reinforce and blend. Intensity depends on the planets involved.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "sextile",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "combines pleasantly with",
+                                "other_body": "Mean Lilith",
+                                "other_sign": "",
+                                "other_planet_keyword": null,
+                                "other_sign_adverb": null,
+                                "synthesis": "combines pleasantly with",
+                                "interpretation": "Cooperative, supportive connection. Opportunities that arise with modest effort.",
+                                "is_placeholder": false
+                            }
+                        ],
+                        "long": {
+                            "in_sign": "An active social life is important to you, but even more so is the desire to be with and work with other people. Cooperative efforts please you, while conflict is difficult and to be avoided, in your opinion. Your desire for harmony, however, can stop you from airing dislikes that merit discussion. You also appear indecisive at times because of your tendency to weigh the pros and cons before taking action. A common statement is, “I’ll have to think about that.” Physical activity isn’t your favorite, and lazy periods are likely. But mentally stimulating activities excite you, as does debate, even in a casual, informal setting. Though you’re generally easygoing, your anger flares at the first sign of injustice.",
+                            "in_house": "In your work you set out to accomplish things. Keeping impulsiveness under control will make you more efficient. You drive yourself hard and expect others to perform at your level. You have vitality and energy, but are prone to careless accidents. Good point: can initiate new work methods. Bad point: at times intolerant and argumentative with coworkers."
+                        }
+                    },
+                    {
+                        "body": "Saturn",
+                        "sign": "Libra",
+                        "sign_adverb": "adaptively",
+                        "planet_keyword": "controls",
+                        "synthesis": "controls adaptively",
+                        "retrograde": true,
+                        "aspects": [
+                            {
+                                "aspect": "trine",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "combines very easily with",
+                                "other_body": "Sun",
+                                "other_sign": "Aquarius",
+                                "other_planet_keyword": "creates",
+                                "other_sign_adverb": "knowingly",
+                                "synthesis": "combines very easily with creates knowingly",
+                                "interpretation": "Ease and flow between energies. Natural talent or harmony in the areas involved.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "square",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "interacts stressfully with",
+                                "other_body": "Venus",
+                                "other_sign": "Capricorn",
+                                "other_planet_keyword": "loves",
+                                "other_sign_adverb": "usefully",
+                                "synthesis": "interacts stressfully with loves usefully",
+                                "interpretation": "Friction and challenge that can drive action. Often requires effort to harness constructively.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "conjunction",
+                                "aspect_type": null,
+                                "aspect_keyphrase": null,
+                                "other_body": "Mars",
+                                "other_sign": "Libra",
+                                "other_planet_keyword": "acts",
+                                "other_sign_adverb": "adaptively",
+                                "synthesis": "acts adaptively",
+                                "interpretation": "Planets merge their energies; themes reinforce and blend. Intensity depends on the planets involved.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "sextile",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "combines pleasantly with",
+                                "other_body": "Neptune",
+                                "other_sign": "Sagittarius",
+                                "other_planet_keyword": "inspires",
+                                "other_sign_adverb": "far-reachingly",
+                                "synthesis": "combines pleasantly with inspires far-reachingly",
+                                "interpretation": "Cooperative, supportive connection. Opportunities that arise with modest effort.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "conjunction",
+                                "aspect_type": null,
+                                "aspect_keyphrase": null,
+                                "other_body": "Pluto",
+                                "other_sign": "Libra",
+                                "other_planet_keyword": "transforms",
+                                "other_sign_adverb": "adaptively",
+                                "synthesis": "transforms adaptively",
+                                "interpretation": "Planets merge their energies; themes reinforce and blend. Intensity depends on the planets involved.",
+                                "is_placeholder": false
+                            }
+                        ],
+                        "long": {
+                            "in_sign": "Loyalty, devotion to duty, and a strong sense of justice are a few of your strengths, along with tact and kindness. You believe in fairness and impartiality and thus can be an outstanding mediator in both personal and business situations. At times, however, you can be impatient and intolerant, and you’re rarely swayed by sympathy and emotions. You enjoy helping others help themselves rather than doing things for them. Many people with Saturn in Libra form romantic partnerships later in life or with someone who is older or distinguished in his or her career.",
+                            "in_house": "You are a conscientious and reliable worker and handle responsibility well. You are exacting in your demands on yourself. Health may be under strain due to overwork or because you tend to neglect looking after yourself. Good point: you are admired by colleagues and associates. Bad point: you can't accept that there are limitations and obstacles beyond your control."
+                        }
+                    },
+                    {
+                        "body": "Pluto",
+                        "sign": "Libra",
+                        "sign_adverb": "adaptively",
+                        "planet_keyword": "transforms",
+                        "synthesis": "transforms adaptively",
+                        "retrograde": true,
+                        "aspects": [
+                            {
+                                "aspect": "trine",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "combines very easily with",
+                                "other_body": "Sun",
+                                "other_sign": "Aquarius",
+                                "other_planet_keyword": "creates",
+                                "other_sign_adverb": "knowingly",
+                                "synthesis": "combines very easily with creates knowingly",
+                                "interpretation": "Ease and flow between energies. Natural talent or harmony in the areas involved.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "square",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "interacts stressfully with",
+                                "other_body": "Venus",
+                                "other_sign": "Capricorn",
+                                "other_planet_keyword": "loves",
+                                "other_sign_adverb": "usefully",
+                                "synthesis": "interacts stressfully with loves usefully",
+                                "interpretation": "Friction and challenge that can drive action. Often requires effort to harness constructively.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "conjunction",
+                                "aspect_type": null,
+                                "aspect_keyphrase": null,
+                                "other_body": "Mars",
+                                "other_sign": "Libra",
+                                "other_planet_keyword": "acts",
+                                "other_sign_adverb": "adaptively",
+                                "synthesis": "acts adaptively",
+                                "interpretation": "Planets merge their energies; themes reinforce and blend. Intensity depends on the planets involved.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "conjunction",
+                                "aspect_type": null,
+                                "aspect_keyphrase": null,
+                                "other_body": "Saturn",
+                                "other_sign": "Libra",
+                                "other_planet_keyword": "controls",
+                                "other_sign_adverb": "adaptively",
+                                "synthesis": "controls adaptively",
+                                "interpretation": "Planets merge their energies; themes reinforce and blend. Intensity depends on the planets involved.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "sextile",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "combines pleasantly with",
+                                "other_body": "Neptune",
+                                "other_sign": "Sagittarius",
+                                "other_planet_keyword": "inspires",
+                                "other_sign_adverb": "far-reachingly",
+                                "synthesis": "combines pleasantly with inspires far-reachingly",
+                                "interpretation": "Cooperative, supportive connection. Opportunities that arise with modest effort.",
+                                "is_placeholder": false
+                            }
+                        ],
+                        "long": {
+                            "in_sign": "You’re concerned with issues of personal and global justice. These beliefs also influence your view of relationships, which you believe should be mutually supportive at all times. You strive for 100 percent shared experiences in a partnership and work toward that idealistic end. Pluto in Libra (1971–1984) featured changes in divorce laws and procedures and advances in women’s rights, but the Equal Rights Amendment was defeated. The Vietnam War sparked a demand for peace, love, and harmony.",
+                            "in_house": "You have great power of concentration and are intent on seeing results. You tend to overwork yourself. You take an interest in medicine and health and are sometimes gifted in the healing arts. Good point: the work you do can inspire others. Bad point: physical energy is often sapped by job pressures."
+                        }
+                    }
+                ]
+            },
+            {
+                "house": 7,
+                "house_keyword": "relationships and opposites",
+                "sign_on_cusp": "Scorpio",
+                "placements": [
+                    {
+                        "body": "Jupiter",
+                        "sign": "Scorpio",
+                        "sign_adverb": "intensely",
+                        "planet_keyword": "expands",
+                        "synthesis": "expands intensely",
+                        "retrograde": false,
+                        "aspects": [
+                            {
+                                "aspect": "opposition",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "faces and challenges",
+                                "other_body": "Chiron",
+                                "other_sign": "Taurus",
+                                "other_planet_keyword": "heals",
+                                "other_sign_adverb": "Realistically",
+                                "synthesis": "faces and challenges heals Realistically",
+                                "interpretation": "Dynamic tension between two poles. Integration or awareness of both sides brings growth.",
+                                "is_placeholder": false
+                            }
+                        ],
+                        "long": {
+                            "in_sign": "You delve deep into any subject that interests you, researching every facet until you’ve mastered the knowledge or acquired enough to suit your needs. However, you can overdo it and develop an intense emotional involvement that limits perspective. Step back periodically for a fresh look. At times, you can be secretive and suspicious of others’ motives. That’s an asset when used positively to protect your interests, but not if it undermines your financial objectives. Many people with Jupiter in Scorpio amass sizable assets through hard work and determination.",
+                            "in_house": "You are successful in marriage and partnerships, and are likely to gain power and prestige through both. Jupiter in the Seventh House often means you will marry twice and that one of your mates is likely to be powerful or wealthy. During your lifetime your adversaries often become friends, and conflicts have a beneficial ending. Good point: legal partnerships tend to be fruitful. Bad point: overgenerosity and placing your trust in the wrong person."
+                        }
+                    }
+                ]
+            },
+            {
+                "house": 8,
+                "house_keyword": "shared possessions",
+                "sign_on_cusp": "Sagittarius",
+                "placements": [
+                    {
+                        "body": "Uranus",
+                        "sign": "Sagittarius",
+                        "sign_adverb": "far-reachingly",
+                        "planet_keyword": "invents",
+                        "synthesis": "invents far-reachingly",
+                        "retrograde": false,
+                        "aspects": [
+                            {
+                                "aspect": "quintile",
+                                "aspect_type": null,
+                                "aspect_keyphrase": null,
+                                "other_body": "Moon",
+                                "other_sign": "Virgo",
+                                "other_planet_keyword": "reacts",
+                                "other_sign_adverb": "precisely",
+                                "synthesis": "",
+                                "interpretation": null,
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "sextile",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "combines pleasantly with",
+                                "other_body": "Mercury",
+                                "other_sign": "Aquarius",
+                                "other_planet_keyword": "thinks",
+                                "other_sign_adverb": "knowingly",
+                                "synthesis": "combines pleasantly with thinks knowingly",
+                                "interpretation": "Cooperative, supportive connection. Opportunities that arise with modest effort.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "sextile",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "combines pleasantly with",
+                                "other_body": "Medium Coeli",
+                                "other_sign": "",
+                                "other_planet_keyword": null,
+                                "other_sign_adverb": null,
+                                "synthesis": "combines pleasantly with",
+                                "interpretation": "Cooperative, supportive connection. Opportunities that arise with modest effort.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "trine",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "combines very easily with",
+                                "other_body": "Imum Coeli",
+                                "other_sign": "",
+                                "other_planet_keyword": null,
+                                "other_sign_adverb": null,
+                                "synthesis": "combines very easily with",
+                                "interpretation": "Ease and flow between energies. Natural talent or harmony in the areas involved.",
+                                "is_placeholder": false
+                            }
+                        ],
+                        "long": {
+                            "in_sign": "Everything that is new and different attracts you, and your curious mind searches for and quickly absorbs information. Travel and adventure excite you. Leadership potential and progressive ideas further your aims, as does higher education. New thinking, concepts, and ideas accent changes in higher education and organized religion during this period. There also may be technological advances involving travel.",
+                            "in_house": "You have an unusual outlook on life and death, and possibly an interest in the mystical. Sexual tastes or involvements are likely to be unconventional. You may receive sudden financial benefits from unexpected sources. Good point: you feel a responsibility to others. Bad point: risk of loss through business deals."
+                        }
+                    },
+                    {
+                        "body": "Neptune",
+                        "sign": "Sagittarius",
+                        "sign_adverb": "far-reachingly",
+                        "planet_keyword": "inspires",
+                        "synthesis": "inspires far-reachingly",
+                        "retrograde": false,
+                        "aspects": [
+                            {
+                                "aspect": "sextile",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "combines pleasantly with",
+                                "other_body": "Sun",
+                                "other_sign": "Aquarius",
+                                "other_planet_keyword": "creates",
+                                "other_sign_adverb": "knowingly",
+                                "synthesis": "combines pleasantly with creates knowingly",
+                                "interpretation": "Cooperative, supportive connection. Opportunities that arise with modest effort.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "square",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "interacts stressfully with",
+                                "other_body": "Moon",
+                                "other_sign": "Virgo",
+                                "other_planet_keyword": "reacts",
+                                "other_sign_adverb": "precisely",
+                                "synthesis": "interacts stressfully with reacts precisely",
+                                "interpretation": "Friction and challenge that can drive action. Often requires effort to harness constructively.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "sextile",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "combines pleasantly with",
+                                "other_body": "Saturn",
+                                "other_sign": "Libra",
+                                "other_planet_keyword": "controls",
+                                "other_sign_adverb": "adaptively",
+                                "synthesis": "combines pleasantly with controls adaptively",
+                                "interpretation": "Cooperative, supportive connection. Opportunities that arise with modest effort.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "sextile",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "combines pleasantly with",
+                                "other_body": "Pluto",
+                                "other_sign": "Libra",
+                                "other_planet_keyword": "transforms",
+                                "other_sign_adverb": "adaptively",
+                                "synthesis": "combines pleasantly with transforms adaptively",
+                                "interpretation": "Cooperative, supportive connection. Opportunities that arise with modest effort.",
+                                "is_placeholder": false
+                            }
+                        ],
+                        "long": {
+                            "in_sign": "Your quest for knowledge extends to a search for the meaning of life on a deeper, spiritual level. Faith is strong, and you may feel that your life is guided or directed. Other cultures intrigue you, and travel may widen your horizons as much as formal learning. Spiritual truth and the search for the meaning of religion are associated with Neptune in Sagittarius. There may be scandals involving higher education, religion, and health care.",
+                            "in_house": "You are something of a visionary and seek to give your life more meaning. You may be gifted as a medium or possess strong ESP powers. Finances that you share with a marriage partner are a source of trouble or confusion. Good point: an idealistic desire to help others in need. Bad point: may suffer disappointment or be deluded in a sexual relationship."
+                        }
+                    }
+                ]
+            },
+            {
+                "house": 9,
+                "house_keyword": "long journeys",
+                "sign_on_cusp": "Capricorn",
+                "placements": [
+                    {
+                        "body": "Venus",
+                        "sign": "Capricorn",
+                        "sign_adverb": "usefully",
+                        "planet_keyword": "loves",
+                        "synthesis": "loves usefully",
+                        "retrograde": true,
+                        "aspects": [
+                            {
+                                "aspect": "trine",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "combines very easily with",
+                                "other_body": "Moon",
+                                "other_sign": "Virgo",
+                                "other_planet_keyword": "reacts",
+                                "other_sign_adverb": "precisely",
+                                "synthesis": "combines very easily with reacts precisely",
+                                "interpretation": "Ease and flow between energies. Natural talent or harmony in the areas involved.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "conjunction",
+                                "aspect_type": null,
+                                "aspect_keyphrase": null,
+                                "other_body": "Mercury",
+                                "other_sign": "Aquarius",
+                                "other_planet_keyword": "thinks",
+                                "other_sign_adverb": "knowingly",
+                                "synthesis": "thinks knowingly",
+                                "interpretation": "Planets merge their energies; themes reinforce and blend. Intensity depends on the planets involved.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "square",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "interacts stressfully with",
+                                "other_body": "Mars",
+                                "other_sign": "Libra",
+                                "other_planet_keyword": "acts",
+                                "other_sign_adverb": "adaptively",
+                                "synthesis": "interacts stressfully with acts adaptively",
+                                "interpretation": "Friction and challenge that can drive action. Often requires effort to harness constructively.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "square",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "interacts stressfully with",
+                                "other_body": "Saturn",
+                                "other_sign": "Libra",
+                                "other_planet_keyword": "controls",
+                                "other_sign_adverb": "adaptively",
+                                "synthesis": "interacts stressfully with controls adaptively",
+                                "interpretation": "Friction and challenge that can drive action. Often requires effort to harness constructively.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "square",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "interacts stressfully with",
+                                "other_body": "Pluto",
+                                "other_sign": "Libra",
+                                "other_planet_keyword": "transforms",
+                                "other_sign_adverb": "adaptively",
+                                "synthesis": "interacts stressfully with transforms adaptively",
+                                "interpretation": "Friction and challenge that can drive action. Often requires effort to harness constructively.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "trine",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "combines very easily with",
+                                "other_body": "Chiron",
+                                "other_sign": "Taurus",
+                                "other_planet_keyword": "heals",
+                                "other_sign_adverb": "Realistically",
+                                "synthesis": "combines very easily with heals Realistically",
+                                "interpretation": "Ease and flow between energies. Natural talent or harmony in the areas involved.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "trine",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "combines very easily with",
+                                "other_body": "Ascendant",
+                                "other_sign": "",
+                                "other_planet_keyword": null,
+                                "other_sign_adverb": null,
+                                "synthesis": "combines very easily with",
+                                "interpretation": "Ease and flow between energies. Natural talent or harmony in the areas involved.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "sextile",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "combines pleasantly with",
+                                "other_body": "Descendant",
+                                "other_sign": "",
+                                "other_planet_keyword": null,
+                                "other_sign_adverb": null,
+                                "synthesis": "combines pleasantly with",
+                                "interpretation": "Cooperative, supportive connection. Opportunities that arise with modest effort.",
+                                "is_placeholder": false
+                            }
+                        ],
+                        "long": {
+                            "in_sign": "You’re cautious in matters of the heart, not only because that’s your nature but also as a result of experience. Only when you feel totally secure do you risk making your affections known. Always the epitome of decorum in public, you express your highly sensual nature in private. Some people with Venus in Capricorn form a partnership for status or financial reasons, or choose a mate who is much younger or older. You’re financially conservative, thrifty, and conscientious. (Security issues prompt some to be stingy and cheap.) You’re a hard worker, and your ambitions can yield significant monetary rewards, but you sometimes spend to “prove” your success.",
+                            "in_house": "You have warmth and understanding for people from different backgrounds. You are open to new ideas and experiences. Chances are good that you will receive some kind of honor in life. You may possibly be married abroad or marry a foreigner. Good point: high ideals. Bad point: you long for the unattainable."
+                        }
+                    }
+                ]
+            },
+            {
+                "house": 10,
+                "house_keyword": "public image",
+                "sign_on_cusp": "Aquarius",
+                "placements": [
+                    {
+                        "body": "Sun",
+                        "sign": "Aquarius",
+                        "sign_adverb": "knowingly",
+                        "planet_keyword": "creates",
+                        "synthesis": "creates knowingly",
+                        "retrograde": false,
+                        "aspects": [
+                            {
+                                "aspect": "trine",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "combines very easily with",
+                                "other_body": "Mars",
+                                "other_sign": "Libra",
+                                "other_planet_keyword": "acts",
+                                "other_sign_adverb": "adaptively",
+                                "synthesis": "combines very easily with acts adaptively",
+                                "interpretation": "Ease and flow between energies. Natural talent or harmony in the areas involved.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "trine",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "combines very easily with",
+                                "other_body": "Saturn",
+                                "other_sign": "Libra",
+                                "other_planet_keyword": "controls",
+                                "other_sign_adverb": "adaptively",
+                                "synthesis": "combines very easily with controls adaptively",
+                                "interpretation": "Ease and flow between energies. Natural talent or harmony in the areas involved.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "sextile",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "combines pleasantly with",
+                                "other_body": "Neptune",
+                                "other_sign": "Sagittarius",
+                                "other_planet_keyword": "inspires",
+                                "other_sign_adverb": "far-reachingly",
+                                "synthesis": "combines pleasantly with inspires far-reachingly",
+                                "interpretation": "Cooperative, supportive connection. Opportunities that arise with modest effort.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "trine",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "combines very easily with",
+                                "other_body": "Pluto",
+                                "other_sign": "Libra",
+                                "other_planet_keyword": "transforms",
+                                "other_sign_adverb": "adaptively",
+                                "synthesis": "combines very easily with transforms adaptively",
+                                "interpretation": "Ease and flow between energies. Natural talent or harmony in the areas involved.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "square",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "interacts stressfully with",
+                                "other_body": "Chiron",
+                                "other_sign": "Taurus",
+                                "other_planet_keyword": "heals",
+                                "other_sign_adverb": "Realistically",
+                                "synthesis": "interacts stressfully with heals Realistically",
+                                "interpretation": "Friction and challenge that can drive action. Often requires effort to harness constructively.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "square",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "interacts stressfully with",
+                                "other_body": "Ascendant",
+                                "other_sign": "",
+                                "other_planet_keyword": null,
+                                "other_sign_adverb": null,
+                                "synthesis": "interacts stressfully with",
+                                "interpretation": "Friction and challenge that can drive action. Often requires effort to harness constructively.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "square",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "interacts stressfully with",
+                                "other_body": "Descendant",
+                                "other_sign": "",
+                                "other_planet_keyword": null,
+                                "other_sign_adverb": null,
+                                "synthesis": "interacts stressfully with",
+                                "interpretation": "Friction and challenge that can drive action. Often requires effort to harness constructively.",
+                                "is_placeholder": false
+                            }
+                        ],
+                        "long": {
+                            "in_sign": "Sun in Aquarius: [Add your interpretation here]",
+                            "in_house": "You enjoy seeing new places and exploring new ideas. You are a person who stands by your word and tends to be idealistic. You may spend a good deal of time traveling abroad. Good point: you believe in and pursue an education. Bad point: may become fanatical about your ideas."
+                        }
+                    },
+                    {
+                        "body": "Mercury",
+                        "sign": "Aquarius",
+                        "sign_adverb": "knowingly",
+                        "planet_keyword": "thinks",
+                        "synthesis": "thinks knowingly",
+                        "retrograde": true,
+                        "aspects": [
+                            {
+                                "aspect": "conjunction",
+                                "aspect_type": null,
+                                "aspect_keyphrase": null,
+                                "other_body": "Venus",
+                                "other_sign": "Capricorn",
+                                "other_planet_keyword": "loves",
+                                "other_sign_adverb": "usefully",
+                                "synthesis": "loves usefully",
+                                "interpretation": "Planets merge their energies; themes reinforce and blend. Intensity depends on the planets involved.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "sextile",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "combines pleasantly with",
+                                "other_body": "Uranus",
+                                "other_sign": "Sagittarius",
+                                "other_planet_keyword": "invents",
+                                "other_sign_adverb": "far-reachingly",
+                                "synthesis": "combines pleasantly with invents far-reachingly",
+                                "interpretation": "Cooperative, supportive connection. Opportunities that arise with modest effort.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "conjunction",
+                                "aspect_type": null,
+                                "aspect_keyphrase": null,
+                                "other_body": "Medium Coeli",
+                                "other_sign": "",
+                                "other_planet_keyword": null,
+                                "other_sign_adverb": null,
+                                "synthesis": "",
+                                "interpretation": "Planets merge their energies; themes reinforce and blend. Intensity depends on the planets involved.",
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "quintile",
+                                "aspect_type": null,
+                                "aspect_keyphrase": null,
+                                "other_body": "Descendant",
+                                "other_sign": "",
+                                "other_planet_keyword": null,
+                                "other_sign_adverb": null,
+                                "synthesis": "",
+                                "interpretation": null,
+                                "is_placeholder": false
+                            },
+                            {
+                                "aspect": "opposition",
+                                "aspect_type": null,
+                                "aspect_keyphrase": "faces and challenges",
+                                "other_body": "Imum Coeli",
+                                "other_sign": "",
+                                "other_planet_keyword": null,
+                                "other_sign_adverb": null,
+                                "synthesis": "faces and challenges",
+                                "interpretation": "Dynamic tension between two poles. Integration or awareness of both sides brings growth.",
+                                "is_placeholder": false
+                            }
+                        ],
+                        "long": {
+                            "in_sign": "Natives have beautiful, inventive minds, with qualities of creative genius. They are broad thinkers who remain objective, and enjoy discussing fascinating topics like quantum physics, the nature of reality, or the future of humanity. They think outside the box, easily coming up with inventions and",
+                            "in_house": "You are alert and adaptable, quick to establish rapport with new people. Yours is an exploratory nature, interested in gaining further knowledge. During your middle years you may travel a great deal, both for health and your work. Good point: mentally advanced. Bad point: inclined to be meddlesome and to make promises too readily."
+                        }
+                    }
+                ]
+            }
+        ],
+        "retrograde_planets": [
+            "Mercury",
+            "Pluto",
+            "Saturn",
+            "Venus"
+        ],
+        "retrograde_interpretations": {}
+    },
+    "reading_id": "Seth-data-check__1982-02-10T11:02__31.6941__-89.1306"
+}

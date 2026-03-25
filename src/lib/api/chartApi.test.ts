@@ -76,8 +76,8 @@ describe("Chart API response analysis", () => {
       day: String(TEST_PARAMS.day),
       hour: String(TEST_PARAMS.hour),
       min: String(TEST_PARAMS.min),
-      city: TEST_PARAMS.city,
-      nation: TEST_PARAMS.nation,
+      city: TEST_PARAMS.city ?? "",
+      nation: TEST_PARAMS.nation ?? "",
       house_system: "whole_sign",
     });
     const res = await fetch(

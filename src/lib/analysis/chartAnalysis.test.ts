@@ -4,13 +4,36 @@
 
 import { describe, it, expect } from "vitest";
 import { analyzeChartApiResponse } from "./chartAnalysis";
-import type { ChartApiResponse } from "../models/reading";
+import type { ChartAPIResponse } from "../types/data";
+import { emptyChartData } from "../types/data";
 
-// wholeSignExpectedOrder is not exported - we test via analyzeChartApiResponse
+function chartApiFixture(
+  partial: Pick<ChartAPIResponse, "name" | "birth_datetime" | "latitude" | "longitude" | "sun_sign" | "moon_sign" | "rising_sign"> & {
+    planets: ChartAPIResponse["chart_data"]["planets"];
+    houses: ChartAPIResponse["chart_data"]["houses"];
+    aspects?: ChartAPIResponse["chart_data"]["aspects"];
+  }
+): ChartAPIResponse {
+  return {
+    name: partial.name,
+    birth_datetime: partial.birth_datetime,
+    latitude: partial.latitude,
+    longitude: partial.longitude,
+    sun_sign: partial.sun_sign,
+    moon_sign: partial.moon_sign,
+    rising_sign: partial.rising_sign,
+    chart_data: {
+      ...emptyChartData(),
+      planets: partial.planets,
+      houses: partial.houses,
+      aspects: partial.aspects ?? [],
+    },
+  };
+}
 
 describe("analyzeChartApiResponse", () => {
   it("identifies Whole Sign when all cusps at 0°", () => {
-    const api: ChartApiResponse = {
+    const api = chartApiFixture({
       name: null,
       birth_datetime: "1990-06-15T12:00",
       latitude: 0,
@@ -36,7 +59,7 @@ describe("analyzeChartApiResponse", () => {
         { number: 12, sign: "Virgo", degree: 0, abs_degree: 150 },
       ],
       aspects: [],
-    };
+    });
 
     const report = analyzeChartApiResponse(api);
     expect(report.wholeSign.isWholeSign).toBe(true);
@@ -46,7 +69,7 @@ describe("analyzeChartApiResponse", () => {
   });
 
   it("identifies Placidus when cusps have non-zero degrees", () => {
-    const api: ChartApiResponse = {
+    const api = chartApiFixture({
       name: null,
       birth_datetime: "1990-06-15T12:00",
       latitude: 40,
@@ -70,7 +93,7 @@ describe("analyzeChartApiResponse", () => {
         { number: 12, sign: "Virgo", degree: 15, abs_degree: 165 },
       ],
       aspects: [],
-    };
+    });
 
     const report = analyzeChartApiResponse(api);
     expect(report.wholeSign.isWholeSign).toBe(false);
@@ -78,7 +101,7 @@ describe("analyzeChartApiResponse", () => {
   });
 
   it("flags planet-house inconsistency when planet sign ≠ house sign in Whole Sign", () => {
-    const api: ChartApiResponse = {
+    const api = chartApiFixture({
       name: null,
       birth_datetime: "1990-06-15T12:00",
       latitude: 0,
@@ -104,7 +127,7 @@ describe("analyzeChartApiResponse", () => {
         { number: 12, sign: "Virgo", degree: 0, abs_degree: 150 },
       ],
       aspects: [],
-    };
+    });
 
     const report = analyzeChartApiResponse(api);
     expect(report.planetHouseConsistency.valid).toBe(false);

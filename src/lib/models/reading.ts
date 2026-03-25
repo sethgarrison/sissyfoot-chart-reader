@@ -1,3 +1,7 @@
+import type { InterpretationsSummary } from "./interpretationsSummary";
+import type { ChartAPIResponse, ChartData, ChartInterpretation } from "../types/data";
+import { emptyChartData } from "../types/data";
+
 /**
  * A planetary placement within a chart — which sign and house
  * a celestial body occupies, and its exact ecliptic longitude.
@@ -140,51 +144,7 @@ export interface ElementOrModalityEntry {
   interpretation?: string;
 }
 
-/**
- * Chart interpretations from the API.
- */
-export interface ChartInterpretations {
-  planet_in_sign?: Record<string, string>;
-  planet_in_house?: Record<string, string>;
-  chart_shape?: {
-    primary?: string;
-    interpretation?: string;
-    distribution?: Record<string, string>;
-  };
-  /** Element/modality interpretation keys → text (e.g. element_fire_dominant, quality_balanced) */
-  modality_element_distribution?: Record<string, string>;
-  /** List of retrograde planet names */
-  retrograde_planets?: string[];
-  /** Retrograde interpretations, same key format as planet_in_sign / planet_in_house */
-  retrograde_interpretations?: Record<string, string>;
-  /** Rising sign interpretation from sign_house (House 1 + rising sign) */
-  rising_sign_interpretation?: string;
-  /** Planet counts by element (fire, earth, air, water) — from houses_overview or legacy */
-  by_element?: Record<string, ElementOrModalityEntry>;
-  /** Planet counts by modality (cardinal, fixed, mutable) — from houses_overview or legacy */
-  by_quality?: Record<string, ElementOrModalityEntry>;
-  /** House overview interpretations — from API (legacy/flat) */
-  houses_overview?: Record<string, string>;
-  /**
-   * Interpretation by aspect type (fallback when planet-pair key missing).
-   * Server keys: "conjunction", "stressful", "easy-flowing"
-   */
-  aspects_by_category?: Record<string, string>;
-  /** Big Three: Sun/Moon/Ascendant interpretations keyed by sign */
-  big_three?: {
-    sun?: Record<string, BigThreeEntry>;
-    moon?: Record<string, BigThreeEntry>;
-    ascendant?: Record<string, BigThreeEntry>;
-  };
-  /** Key → "database" | "default" for data source metadata */
-  sources?: Record<string, string>;
-  /** Keys where content is placeholder (needs filling) */
-  placeholder_keys?: string[];
-  /** Per-house interpretation built from planet/house + shape + distribution */
-  house_interpretation?: Record<string, string>;
-}
-
-/** Supporting data: element/modality counts + signs (from chart.houses_overview) */
+/** Supporting data: element/modality counts + signs (legacy / derived views). */
 export interface SignPlacementOverview {
   signs_with_planets?: string[];
   by_element?: Record<string, ElementOrModalityEntry & { planets?: string[] }>;
@@ -192,7 +152,7 @@ export interface SignPlacementOverview {
 }
 
 /**
- * A complete natal chart reading.
+ * A complete natal chart reading (client model after {@link chartFromApiResponse}).
  */
 export interface NatalChart {
   birthData: BirthData;
@@ -202,92 +162,21 @@ export interface NatalChart {
   aspects: Aspect[];
   ascendant: { sign: string; degrees: number; minutes: number };
   midheaven: { sign: string; degrees: number; minutes: number };
-  /** Element/modality counts from server (by_element, by_quality, signs_with_planets) */
-  houses_overview?: SignPlacementOverview;
-  interpretations?: ChartInterpretations;
+  /** Raw geometry + aggregates from API `chart_data` (for drawing / counts only). */
+  chartData: ChartData;
+  /** Structured interpretations from API `interpretation`. */
+  interpretation?: ChartInterpretation;
+  /** Optional legacy summary payload from API. */
+  interpretations_summary?: InterpretationsSummary;
 }
 
-/**
- * Response shape from the astrological chart API.
- * @see https://sissyfoot-astrological-api.onrender.com/chart
- */
-export interface ChartApiResponse {
-  name: string | null;
-  birth_datetime: string;
-  latitude: number;
-  longitude: number;
-  sun_sign: string;
-  moon_sign: string;
-  rising_sign: string;
-  lunar_phase?: {
-    degrees_between: number;
-    phase_name: string;
-    emoji: string;
-  };
-  planets: Array<{
-    name: string;
-    sign: string;
-    sign_num: number;
-    degree: number;
-    abs_degree: number;
-    house: number;
-    retrograde: boolean;
-    speed: number;
-  }>;
-  lunar_nodes?: Array<{
-    node: string;
-    sign: string;
-    sign_num: number;
-    degree: number;
-    abs_degree: number;
-    house: number;
-  }>;
-  houses: Array<{
-    number: number;
-    sign: string;
-    degree: number;
-    abs_degree: number;
-  }>;
-  aspects: Array<{
-    planet1: string;
-    planet2: string;
-    aspect: string;
-    aspect_degrees: number;
-    orbit: number;
-    movement: string;
-    /** Server type_key: conjunction, stressful, easy-flowing (for category lookup) */
-    type?: string;
-    interpretation?: string;
-    source?: "database" | "default";
-    is_placeholder?: boolean;
-  }>;
-  houses_overview?: SignPlacementOverview;
-  interpretations?: {
-    planet_in_sign?: Record<string, string>;
-    planet_in_house?: Record<string, string>;
-    chart_shape?: {
-      primary?: string;
-      interpretation?: string;
-      distribution?: Record<string, string>;
-    };
-    modality_element_distribution?: Record<string, string>;
-    retrograde_planets?: string[];
-    retrograde_interpretations?: Record<string, string>;
-    rising_sign_interpretation?: string;
-    by_element?: Record<string, { count: number; signs: string[]; interpretation?: string; planets?: string[] }>;
-    by_quality?: Record<string, { count: number; signs: string[]; interpretation?: string; planets?: string[] }>;
-    houses_overview?: Record<string, string>;
-    aspects_by_category?: Record<string, string>;
-    big_three?: {
-      sun?: Record<string, BigThreeEntry>;
-      moon?: Record<string, BigThreeEntry>;
-      ascendant?: Record<string, BigThreeEntry>;
-    };
-    sources?: Record<string, string>;
-    placeholder_keys?: string[];
-    house_interpretation?: Record<string, string>;
-  };
-}
+export type {
+  ChartAPIResponse,
+  ChartApiResponse,
+  ChartApiPlanet,
+  ChartApiLunarNode,
+  ChartApiHouse,
+} from "../types/data";
 
 /** Per-house entry from house_interpretation.per_house. Replaces flat planet_in_house. */
 export interface PerHouseInterpretationEntry {
@@ -329,10 +218,24 @@ export function formatHouseInterpretationValue(val: unknown): string {
   return "";
 }
 
+/**
+ * Coerce house index from chart or interpretation payloads to 1–12.
+ * JSON sometimes sends numeric houses as strings; without this, Set lookups against chart placements miss.
+ */
+export function normalizeChartHouse(value: unknown): number | null {
+  if (typeof value === "number" && Number.isInteger(value) && value >= 1 && value <= 12) return value;
+  if (typeof value === "string" && value.trim() !== "") {
+    const n = Number(value);
+    if (Number.isInteger(n) && n >= 1 && n <= 12) return n;
+  }
+  return null;
+}
+
 function parsePerHouseItem(item: unknown): PerHouseInterpretationEntry | null {
   if (!item || typeof item !== "object" || Array.isArray(item)) return null;
   const o = item as Record<string, unknown>;
-  const house = typeof o.house === "number" ? o.house : 0;
+  const house = normalizeChartHouse(o.house);
+  if (house == null) return null;
   const sign_on_cusp = typeof o.sign_on_cusp === "string" ? o.sign_on_cusp : "";
   const planets = Array.isArray(o.planets)
     ? (o.planets.filter((p): p is string => typeof p === "string"))
@@ -382,25 +285,35 @@ export function parseHouseInterpretation(
   return { perHouse, other };
 }
 
-/**
- * Look up planet-in-house interpretation: per_house first, then flat planet_in_house.
- */
+/** Planet-in-house blurb from structured `interpretation.house_groups`. */
 export function getPlanetInHouseInterpretation(
   planet: string,
   house: number,
-  interpretations: ChartInterpretations | undefined
+  interpretation: ChartInterpretation | undefined
 ): string | undefined {
-  if (!interpretations) return undefined;
-  const hi = interpretations.house_interpretation as Record<string, unknown> | undefined;
-  if (hi?.per_house && Array.isArray(hi.per_house)) {
-    const entry = hi.per_house.find((e: unknown) => (e as { house?: number }).house === house);
-    if (entry && typeof entry === "object") {
-      const pi = (entry as { planet_interpretations?: Record<string, string> }).planet_interpretations;
-      const key = `${planet} in House ${house}`;
-      if (pi?.[key]) return pi[key];
+  if (!interpretation) return undefined;
+  for (const hg of interpretation.house_groups) {
+    if (hg.house !== house) continue;
+    for (const pl of hg.planets) {
+      if (pl.body === planet) return pl.interpretation?.planet_in_house;
     }
   }
-  return interpretations.planet_in_house?.[`${planet} in House ${house}`];
+  return undefined;
+}
+
+/** Planet-in-sign blurb from structured `interpretation.house_groups`. */
+export function getPlanetInSignInterpretation(
+  planet: string,
+  sign: string,
+  interpretation: ChartInterpretation | undefined
+): string | undefined {
+  if (!interpretation) return undefined;
+  for (const hg of interpretation.house_groups) {
+    for (const pl of hg.planets) {
+      if (pl.body === planet && pl.sign === sign) return pl.interpretation?.planet_in_sign;
+    }
+  }
+  return undefined;
 }
 
 /**
@@ -430,20 +343,13 @@ export function aspectInterpretationKey(a: { planet1: string; planet2: string; t
 }
 
 /**
- * Get aspect interpretation text: uses per-aspect interpretation (from chart.aspects) first,
- * then aspects_by_category fallback. Does not use interpretations.aspects.
- * @param aspect - aspect with planet1, planet2, type, optional interpretation
- * @param interpretations - chart.interpretations (for aspects_by_category only)
- * @returns interpretation text or undefined
+ * Aspect blurb from resolved chart aspects (API attaches copy on each geometric aspect row).
  */
 export function getAspectInterpretation(
   aspect: { planet1: string; planet2: string; type: AspectType; interpretation?: string },
-  interpretations: ChartInterpretations | undefined
+  _interpretation?: ChartInterpretation | undefined
 ): string | undefined {
-  if (aspect.interpretation) return aspect.interpretation;
-  const category = getAspectCategory(aspect.type);
-  const serverKey = aspectCategoryToServerKey(category);
-  return interpretations?.aspects_by_category?.[serverKey];
+  return aspect.interpretation ?? undefined;
 }
 
 /** Convert decimal degrees to degrees + minutes. */
@@ -454,7 +360,7 @@ function degToDegMin(deg: number): { degrees: number; minutes: number } {
 }
 
 /** Map API response to our NatalChart format. House system is determined by the API. */
-export function chartFromApiResponse(api: ChartApiResponse): NatalChart {
+export function chartFromApiResponse(api: ChartAPIResponse): NatalChart {
   const [datePart, timePart] = api.birth_datetime.split("T");
   const time = timePart?.slice(0, 5) ?? "00:00";
 
@@ -467,8 +373,10 @@ export function chartFromApiResponse(api: ChartApiResponse): NatalChart {
     timezone: "UTC",
   };
 
+  const data = api.chart_data;
+
   const supportedPlanets = new Set(["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto", "Chiron"]);
-  const planets: PlanetPlacement[] = api.planets
+  const planets: PlanetPlacement[] = data.planets
     .filter((p) => supportedPlanets.has(p.name))
     .map((p) => {
       const { degrees, minutes } = degToDegMin(p.degree);
@@ -482,13 +390,13 @@ export function chartFromApiResponse(api: ChartApiResponse): NatalChart {
       };
     });
 
-  const houses: HouseCusp[] = api.houses.map((h) => {
+  const houses: HouseCusp[] = data.houses.map((h) => {
     const { degrees, minutes } = degToDegMin(h.degree);
     return { house: h.number, sign: h.sign, degrees, minutes };
   });
 
   const supportedAspects = new Set(["conjunction", "opposition", "trine", "square", "sextile", "quincunx"]);
-  const aspects: Aspect[] = api.aspects
+  const aspects: Aspect[] = data.aspects
     .filter((a) => supportedAspects.has((a.aspect || "").toLowerCase()))
     .filter((a) => supportedPlanets.has(a.planet1) && supportedPlanets.has(a.planet2))
     .map((a) => {
@@ -499,12 +407,12 @@ export function chartFromApiResponse(api: ChartApiResponse): NatalChart {
         type,
         orb: Math.round(a.orbit * 10) / 10,
         ...(a.interpretation && { interpretation: a.interpretation }),
-        ...(a.source && { source: a.source }),
+        ...(a.source && { source: a.source as Aspect["source"] }),
         ...(a.is_placeholder !== undefined && { is_placeholder: a.is_placeholder }),
       };
     });
 
-  const lunarNodes: LunarNodePosition[] = (api.lunar_nodes ?? []).map((n) => {
+  const lunarNodes: LunarNodePosition[] = (data.lunar_nodes ?? []).map((n) => {
     const { degrees, minutes } = degToDegMin(n.degree);
     return {
       node: n.node,
@@ -515,8 +423,8 @@ export function chartFromApiResponse(api: ChartApiResponse): NatalChart {
     };
   });
 
-  const house1 = api.houses?.find((h) => h.number === 1);
-  const house10 = api.houses?.find((h) => h.number === 10);
+  const house1 = data.houses?.find((h) => h.number === 1);
+  const house10 = data.houses?.find((h) => h.number === 10);
 
   return {
     birthData,
@@ -530,8 +438,9 @@ export function chartFromApiResponse(api: ChartApiResponse): NatalChart {
     midheaven: house10
       ? { ...degToDegMin(house10.degree), sign: house10.sign }
       : { sign: "Aries", degrees: 0, minutes: 0 },
-    houses_overview: api.houses_overview,
-    interpretations: api.interpretations,
+    chartData: data,
+    interpretation: api.interpretation,
+    interpretations_summary: api.interpretations_summary,
   };
 }
 
@@ -581,4 +490,5 @@ export const SAMPLE_CHART: NatalChart = {
     { planet1: "Jupiter", planet2: "Saturn", type: "opposition", orb: 3.1 },
     { planet1: "Sun", planet2: "Jupiter", type: "conjunction", orb: 0.8 },
   ],
+  chartData: emptyChartData(),
 };
