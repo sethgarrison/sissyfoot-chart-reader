@@ -105,32 +105,26 @@
             <dl class="big-three">
               <dt>Sun</dt>
               <dd class="placement">
-                {bigThree.sun
-                  ? `${bigThree.sun.sign} ${bigThree.sun.degrees}°${bigThree.sun.minutes.toString().padStart(2, "0")}' · House ${bigThree.sun.house}`
+                {bigThree.sun.placement
+                  ? `${bigThree.sun.placement.sign} ${bigThree.sun.placement.degrees}°${bigThree.sun.placement.minutes.toString().padStart(2, "0")}' · House ${bigThree.sun.placement.house}`
                   : "—"}
               </dd>
-              {#if bigThree.sun}
-                {@const sunInterp = chart.interpretation?.big_three?.sun?.interpretation}
-                {#if sunInterp}
-                  <dd class="interp">{sunInterp}</dd>
-                {/if}
+              {#if bigThree.sun.reading?.interpretation}
+                <dd class="interp">{bigThree.sun.reading.interpretation}</dd>
               {/if}
               <dt>Moon</dt>
               <dd class="placement">
-                {bigThree.moon
-                  ? `${bigThree.moon.sign} ${bigThree.moon.degrees}°${bigThree.moon.minutes.toString().padStart(2, "0")}' · House ${bigThree.moon.house}`
+                {bigThree.moon.placement
+                  ? `${bigThree.moon.placement.sign} ${bigThree.moon.placement.degrees}°${bigThree.moon.placement.minutes.toString().padStart(2, "0")}' · House ${bigThree.moon.placement.house}`
                   : "—"}
               </dd>
-              {#if bigThree.moon}
-                {@const moonInterp = chart.interpretation?.big_three?.moon?.interpretation}
-                {#if moonInterp}
-                  <dd class="interp">{moonInterp}</dd>
-                {/if}
+              {#if bigThree.moon.reading?.interpretation}
+                <dd class="interp">{bigThree.moon.reading.interpretation}</dd>
               {/if}
               <dt>Rising</dt>
-              <dd class="placement">{bigThree.rising.sign}</dd>
-              {#if chart.interpretation?.big_three?.ascendant?.interpretation}
-                <dd class="interp">{chart.interpretation.big_three.ascendant.interpretation}</dd>
+              <dd class="placement">{bigThree.ascendant.placement.sign}</dd>
+              {#if bigThree.ascendant.reading?.interpretation}
+                <dd class="interp">{bigThree.ascendant.reading.interpretation}</dd>
               {/if}
             </dl>
           </div>

@@ -4,6 +4,60 @@
  */
 import { ZODIAC_SIGNS } from "../models/zodiac";
 import type { NatalChart, PlanetPlacement } from "../models";
+import type { BigThreeEntrySummary } from "../models/interpretationsSummary";
+import type { MoonInterpretation, RisingInterpretation, SunInterpretation } from "../types/data";
+
+function sunInterpretationToReading(s: SunInterpretation): BigThreeEntrySummary {
+  return {
+    interpretation: s.interpretation,
+    archetypes_balanced: s.archetypes_balanced,
+    archetypes_unbalanced: s.archetypes_unbalanced,
+    journey: s.journey,
+    gifts: s.gifts,
+    challenges: s.challenges,
+  };
+}
+
+function moonInterpretationToReading(m: MoonInterpretation): BigThreeEntrySummary {
+  return {
+    interpretation: m.interpretation,
+    nature: m.nature,
+    sources_of_contentment: m.sources_of_contentment,
+    keywords: m.keywords ?? undefined,
+  };
+}
+
+function ascendantInterpretationToReading(a: RisingInterpretation): BigThreeEntrySummary {
+  return {
+    interpretation: a.interpretation,
+    impression: a.impression,
+    appearance: a.appearance,
+    childhood: a.childhood,
+    balance: a.balance,
+  };
+}
+
+/** Geometry + {@link BigThreeEntrySummary} from `NatalChart.interpretation.big_three`. */
+export interface BigThreeSun {
+  placement: PlanetPlacement | undefined;
+  reading: BigThreeEntrySummary | undefined;
+}
+
+export interface BigThreeMoon {
+  placement: PlanetPlacement | undefined;
+  reading: BigThreeEntrySummary | undefined;
+}
+
+export interface BigThreeAscendant {
+  placement: { sign: string; degrees: number; minutes: number };
+  reading: BigThreeEntrySummary | undefined;
+}
+
+export interface BigThree {
+  sun: BigThreeSun;
+  moon: BigThreeMoon;
+  ascendant: BigThreeAscendant;
+}
 
 export type Element = "fire" | "earth" | "air" | "water";
 export type Modality = "cardinal" | "fixed" | "mutable";
@@ -161,14 +215,25 @@ export function buildReadingSlides(chart: NatalChart): ReadingSlide[] {
   return slides;
 }
 
-/** Get Sun, Moon, and Rising placements for overview. */
-export function getBigThree(chart: NatalChart): {
-  sun: PlanetPlacement | undefined;
-  moon: PlanetPlacement | undefined;
-  rising: { sign: string };
-} {
-  const sun = chart.planets.find((p) => p.planet === "Sun");
-  const moon = chart.planets.find((p) => p.planet === "Moon");
-  const rising = chart.ascendant;
-  return { sun, moon, rising };
+/** Sun / Moon / Ascendant placements plus `interpretation.big_three` copy as {@link BigThreeEntrySummary}. */
+export function getBigThree(chart: NatalChart): BigThree {
+  const bt = chart.interpretation?.big_three;
+  const sunPlacement = chart.planets.find((p) => p.planet === "Sun");
+  const moonPlacement = chart.planets.find((p) => p.planet === "Moon");
+  const placementAsc = chart.ascendant;
+
+  return {
+    sun: {
+      placement: sunPlacement,
+      reading: bt?.sun ? sunInterpretationToReading(bt.sun) : undefined,
+    },
+    moon: {
+      placement: moonPlacement,
+      reading: bt?.moon ? moonInterpretationToReading(bt.moon) : undefined,
+    },
+    ascendant: {
+      placement: placementAsc,
+      reading: bt?.ascendant ? ascendantInterpretationToReading(bt.ascendant) : undefined,
+    },
+  };
 }

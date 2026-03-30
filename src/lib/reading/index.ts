@@ -1,4 +1,5 @@
 export * from "./slideTypes";
+export * from "./readingArt";
 export {
   buildReadingSlides,
   computeElementCounts,
@@ -11,6 +12,10 @@ export {
   modalityForSign,
 } from "./readingData";
 export type {
+  BigThree,
+  BigThreeAscendant,
+  BigThreeMoon,
+  BigThreeSun,
   Element,
   ElementCounts,
   HemisphereDistribution,

@@ -1,6 +1,10 @@
 <script lang="ts">
   import type { NatalChart } from "../models";
-  import { normalizeChartHouse } from "../models/reading";
+  import {
+    getPlanetInHouseInterpretation,
+    getPlanetInSignInterpretation,
+    normalizeChartHouse,
+  } from "../models/reading";
   import type {
     InterpretationsSummary,
     HouseGroupSummary,
@@ -17,6 +21,49 @@
 
   const summary = $derived(chart.interpretations_summary);
   const bigThree = $derived(getBigThree(chart));
+
+  function summaryGroupForHouse(house: number): HouseGroupSummary | undefined {
+    const h = normalizeChartHouse(house);
+    return summary?.house_groups?.find((g) => normalizeChartHouse(g.house) === h);
+  }
+
+  function sunMoonInHouse(body: "Sun" | "Moon"): string {
+    const p = chart.planets.find((x) => x.planet === body);
+    if (!p) return "";
+    const hg = summaryGroupForHouse(p.house);
+    const sumPl = hg?.placements?.find((pl) => pl.body === body);
+    return (
+      getPlanetInHouseInterpretation(body, p.house, chart.interpretation) ??
+      sumPl?.long?.in_house ??
+      ""
+    ).trim();
+  }
+
+  function ascendantInHouseSummary(): string {
+    const hg = summaryGroupForHouse(1);
+    const sumPl = hg?.placements?.find((pl) => pl.body === "Ascendant");
+    return (
+      getPlanetInHouseInterpretation("Ascendant", 1, chart.interpretation) ??
+      sumPl?.long?.in_house ??
+      ""
+    ).trim();
+  }
+
+  function ascendantInSignSummary(): string {
+    const sign = chart.ascendant.sign;
+    const hg = summaryGroupForHouse(1);
+    const sumPl = hg?.placements?.find((pl) => pl.body === "Ascendant");
+    return (
+      getPlanetInSignInterpretation("Ascendant", sign, chart.interpretation) ??
+      sumPl?.long?.in_sign ??
+      ""
+    ).trim();
+  }
+
+  const summarySunInHouse = $derived.by(() => sunMoonInHouse("Sun"));
+  const summaryMoonInHouse = $derived.by(() => sunMoonInHouse("Moon"));
+  const summaryAscendantInHouse = $derived.by(() => ascendantInHouseSummary());
+  const summaryAscendantInSign = $derived.by(() => ascendantInSignSummary());
 
   /** Until the API omits empty houses, drop groups with no placements or no chart bodies in that house. */
   const houseGroupsToShow = $derived.by(() => {
@@ -127,77 +174,92 @@
         </section>
       {/each}
 
-      {#if summary.big_three}
-        {@const bt = summary.big_three}
-        <section class="summary-section big-three-section">
-          <h2 class="section-title">Big Three</h2>
-          {#if bigThree.sun && bt.sun?.[bigThree.sun.sign]}
-            {@const sunEntry = bt.sun[bigThree.sun.sign]}
-            <div class="big-three-block">
-              <h3 class="bt-label">Sun in {bigThree.sun.sign}</h3>
-              {#if sunEntry.interpretation}
-                <p class="bt-text">{sunEntry.interpretation}</p>
-              {/if}
-              {#if sunEntry.archetypes_balanced}
-                <p class="bt-text"><strong>Archetypes (balanced):</strong> {sunEntry.archetypes_balanced}</p>
-              {/if}
-              {#if sunEntry.archetypes_unbalanced}
-                <p class="bt-text"><strong>Archetypes (unbalanced):</strong> {sunEntry.archetypes_unbalanced}</p>
-              {/if}
-              {#if sunEntry.journey}
-                <p class="bt-text"><strong>Journey:</strong> {sunEntry.journey}</p>
-              {/if}
-              {#if sunEntry.gifts}
-                <p class="bt-text"><strong>Gifts:</strong> {sunEntry.gifts}</p>
-              {/if}
-              {#if sunEntry.challenges}
-                <p class="bt-text"><strong>Challenges:</strong> {sunEntry.challenges}</p>
-              {/if}
-            </div>
-          {/if}
-          {#if bigThree.moon && bt.moon?.[bigThree.moon.sign]}
-            {@const moonEntry = bt.moon[bigThree.moon.sign]}
-            <div class="big-three-block">
-              <h3 class="bt-label">Moon in {bigThree.moon.sign}</h3>
-              {#if moonEntry.interpretation}
-                <p class="bt-text">{moonEntry.interpretation}</p>
-              {/if}
-              {#if moonEntry.nature}
-                <p class="bt-text"><strong>Nature:</strong> {moonEntry.nature}</p>
-              {/if}
-              {#if moonEntry.sources_of_contentment}
-                <p class="bt-text"><strong>Sources of contentment:</strong> {moonEntry.sources_of_contentment}</p>
-              {/if}
-              {#if moonEntry.keywords}
-                <p class="bt-text"><strong>Keywords:</strong> {moonEntry.keywords}</p>
-              {/if}
-            </div>
-          {/if}
-          {#if bigThree.rising && bt.ascendant?.[bigThree.rising.sign]}
-            {@const ascEntry = bt.ascendant[bigThree.rising.sign]}
-            <div class="big-three-block">
-              <h3 class="bt-label">Ascendant in {bigThree.rising.sign}</h3>
-              {#if ascEntry.interpretation}
-                <p class="bt-text">{ascEntry.interpretation}</p>
-              {/if}
-              {#if ascEntry.impression}
-                <p class="bt-text"><strong>Impression:</strong> {ascEntry.impression}</p>
-              {/if}
-              {#if ascEntry.appearance}
-                <p class="bt-text"><strong>Appearance:</strong> {ascEntry.appearance}</p>
-              {/if}
-              {#if ascEntry.childhood}
-                <p class="bt-text"><strong>Childhood:</strong> {ascEntry.childhood}</p>
-              {/if}
-              {#if ascEntry.balance}
-                <p class="bt-text"><strong>Balance:</strong> {ascEntry.balance}</p>
-              {/if}
-            </div>
-          {/if}
-        </section>
-      {/if}
     {:else}
       <p class="no-summary">No interpretations summary available for this chart. The API may not yet return <code>interpretations_summary</code>.</p>
+    {/if}
+
+    {#if bigThree.sun.reading || bigThree.moon.reading || bigThree.ascendant.reading || summarySunInHouse || summaryMoonInHouse || summaryAscendantInHouse || summaryAscendantInSign}
+      <section class="summary-section big-three-section">
+        <h2 class="section-title">Big Three</h2>
+        {#if bigThree.sun.placement && (bigThree.sun.reading || summarySunInHouse)}
+          {@const sun = bigThree.sun.placement}
+          {@const sunEntry = bigThree.sun.reading}
+          <div class="big-three-block">
+            <h3 class="bt-label">Sun in {sun.sign}</h3>
+            {#if sunEntry?.interpretation}
+              <p class="bt-text">{sunEntry.interpretation}</p>
+            {/if}
+            {#if sunEntry?.archetypes_balanced}
+              <p class="bt-text"><strong>Archetypes (balanced):</strong> {sunEntry.archetypes_balanced}</p>
+            {/if}
+            {#if sunEntry?.archetypes_unbalanced}
+              <p class="bt-text"><strong>Archetypes (unbalanced):</strong> {sunEntry.archetypes_unbalanced}</p>
+            {/if}
+            {#if sunEntry?.journey}
+              <p class="bt-text"><strong>Journey:</strong> {sunEntry.journey}</p>
+            {/if}
+            {#if sunEntry?.gifts}
+              <p class="bt-text"><strong>Gifts:</strong> {sunEntry.gifts}</p>
+            {/if}
+            {#if sunEntry?.challenges}
+              <p class="bt-text"><strong>Challenges:</strong> {sunEntry.challenges}</p>
+            {/if}
+            {#if summarySunInHouse}
+              <p class="bt-text"><strong>In House {sun.house}:</strong> {summarySunInHouse}</p>
+            {/if}
+          </div>
+        {/if}
+        {#if bigThree.moon.placement && (bigThree.moon.reading || summaryMoonInHouse)}
+          {@const moon = bigThree.moon.placement}
+          {@const moonEntry = bigThree.moon.reading}
+          <div class="big-three-block">
+            <h3 class="bt-label">Moon in {moon.sign}</h3>
+            {#if moonEntry?.interpretation}
+              <p class="bt-text">{moonEntry.interpretation}</p>
+            {/if}
+            {#if moonEntry?.nature}
+              <p class="bt-text"><strong>Nature:</strong> {moonEntry.nature}</p>
+            {/if}
+            {#if moonEntry?.sources_of_contentment}
+              <p class="bt-text"><strong>Sources of contentment:</strong> {moonEntry.sources_of_contentment}</p>
+            {/if}
+            {#if moonEntry?.keywords}
+              <p class="bt-text"><strong>Keywords:</strong> {moonEntry.keywords}</p>
+            {/if}
+            {#if summaryMoonInHouse}
+              <p class="bt-text"><strong>In House {moon.house}:</strong> {summaryMoonInHouse}</p>
+            {/if}
+          </div>
+        {/if}
+        {#if bigThree.ascendant.reading || summaryAscendantInHouse || summaryAscendantInSign}
+          {@const asc = bigThree.ascendant.placement}
+          {@const ascEntry = bigThree.ascendant.reading}
+          <div class="big-three-block">
+            <h3 class="bt-label">Ascendant in {asc.sign}</h3>
+            {#if ascEntry?.interpretation}
+              <p class="bt-text">{ascEntry.interpretation}</p>
+            {/if}
+            {#if ascEntry?.impression}
+              <p class="bt-text"><strong>Impression:</strong> {ascEntry.impression}</p>
+            {/if}
+            {#if ascEntry?.appearance}
+              <p class="bt-text"><strong>Appearance:</strong> {ascEntry.appearance}</p>
+            {/if}
+            {#if ascEntry?.childhood}
+              <p class="bt-text"><strong>Childhood:</strong> {ascEntry.childhood}</p>
+            {/if}
+            {#if ascEntry?.balance}
+              <p class="bt-text"><strong>Balance:</strong> {ascEntry.balance}</p>
+            {/if}
+            {#if summaryAscendantInSign}
+              <p class="bt-text"><strong>In {asc.sign}:</strong> {summaryAscendantInSign}</p>
+            {/if}
+            {#if summaryAscendantInHouse}
+              <p class="bt-text"><strong>In House 1:</strong> {summaryAscendantInHouse}</p>
+            {/if}
+          </div>
+        {/if}
+      </section>
     {/if}
   </main>
 </div>

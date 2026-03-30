@@ -2,8 +2,7 @@
   import ChartCanvasSvg from "./lib/components/ChartCanvasSvg.svelte";
   import BirthDataForm from "./lib/components/BirthDataForm.svelte";
   import ReadingPanel from "./lib/components/ReadingPanel.svelte";
-  import InteractiveReading from "./lib/components/InteractiveReading.svelte";
-  import SummaryReadingView from "./lib/components/SummaryReadingView.svelte";
+  import ScrollReadingView from "./lib/components/ScrollReadingView.svelte";
   import type { NatalChart, PlanetPlacement } from "./lib/models";
   import type { ChartApiParams } from "./lib/api/chartApi";
 
@@ -11,18 +10,12 @@
   let selectedPlanet = $state<PlanetPlacement | null>(null);
   let lastRequestParams = $state<ChartApiParams | null>(null);
   let readingMode = $state(false);
-
-  const useSummaryReading = $derived(!!chart?.interpretations_summary);
 </script>
 
 <div class="app-shell" class:result-view={!!chart}>
   {#if chart}
     {#if readingMode}
-      {#if useSummaryReading}
-        <SummaryReadingView {chart} onClose={() => (readingMode = false)} />
-      {:else}
-        <InteractiveReading {chart} onClose={() => (readingMode = false)} />
-      {/if}
+      <ScrollReadingView {chart} onClose={() => (readingMode = false)} />
     {:else}
       <main class="main-content">
         <ChartCanvasSvg {chart} onPlanetSelect={(p) => (selectedPlanet = p)} />
