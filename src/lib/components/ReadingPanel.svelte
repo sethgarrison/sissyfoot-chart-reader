@@ -2,6 +2,7 @@
   import type { NatalChart, PlanetPlacement } from "../models";
   import { getPlanetInHouseInterpretation, getPlanetInSignInterpretation } from "../models/reading";
   import type { ChartApiParams } from "../api/chartApi";
+  import { getChartShareUrl } from "../chart/chartShareUrl";
 
   interface Props {
     chart: NatalChart;
@@ -12,8 +13,27 @@
   }
   let { chart, selectedPlanet = null, lastRequestParams = null, onNewChart, onStartReading }: Props = $props();
 
+  let shareCopied = $state(false);
+  let shareCopyTimer: ReturnType<typeof setTimeout> | null = null;
+
   function formatRequestTime(p: ChartApiParams): string {
     return `${p.year}-${String(p.month).padStart(2, "0")}-${String(p.day).padStart(2, "0")} ${String(p.hour).padStart(2, "0")}:${String(p.min).padStart(2, "0")}`;
+  }
+
+  async function copyShareLink() {
+    if (!lastRequestParams) return;
+    const url = getChartShareUrl(lastRequestParams);
+    try {
+      await navigator.clipboard.writeText(url);
+      shareCopied = true;
+      if (shareCopyTimer) clearTimeout(shareCopyTimer);
+      shareCopyTimer = setTimeout(() => {
+        shareCopied = false;
+        shareCopyTimer = null;
+      }, 2000);
+    } catch {
+      window.prompt("Copy this link:", url);
+    }
   }
 </script>
 
@@ -21,6 +41,11 @@
   <header class="reading-header">
     <h1>Astro Chart</h1>
     <div class="header-actions">
+      {#if lastRequestParams}
+        <button class="share-link-btn" type="button" onclick={copyShareLink}>
+          {shareCopied ? "Copied!" : "Copy link"}
+        </button>
+      {/if}
       {#if onStartReading}
         <button class="start-reading-btn" onclick={onStartReading}>Start Reading</button>
       {/if}
@@ -182,6 +207,22 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+  }
+
+  .share-link-btn {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8rem;
+    background: #21262d;
+    color: #58a6ff;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    cursor: pointer;
+    min-width: 5.25rem;
+  }
+
+  .share-link-btn:hover {
+    border-color: #58a6ff;
+    color: #79b8ff;
   }
 
   .start-reading-btn {
