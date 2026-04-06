@@ -1,12 +1,8 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import {
     fetchChart,
-    fetchReadings,
-    fetchReadingById,
     type ChartApiParams,
     type LocationResult,
-    type ReadingSummary,
   } from "../api/chartApi";
   import LocationInput from "./LocationInput.svelte";
   import type { NatalChart } from "../models";
@@ -16,64 +12,118 @@
   }
   let { onChartFetched }: Props = $props();
 
-  let form = $state<ChartApiParams>({
-    name: "Seth",
-    year: 1982,
-    month: 2,
-    day: 10,
-    hour: 11,
-    min: 36,
-    lat: 31.6941,
-    lng: -89.1306,
-    timezone: "America/Chicago",
+  /** Form fields before coercion into `ChartApiParams`. */
+  type BirthFormState = {
+    name: string;
+    year?: number;
+    month?: number;
+    day?: number;
+    hour?: number;
+    min?: number;
+    city?: string;
+    nation?: string;
+    lat?: number;
+    lng?: number;
+    timezone?: string;
+    house_system: "whole_sign" | "placidus";
+  };
+
+  let form = $state<BirthFormState>({
+    name: "",
     house_system: "whole_sign",
   });
-  let locationDisplay = $state("Laurel, MS, United States");
+  let locationDisplay = $state("");
   let loading = $state(false);
   let error = $state<string | null>(null);
 
-  let readings = $state<ReadingSummary[]>([]);
-  let readingsLoading = $state(true);
-  let readingsError = $state<string | null>(null);
-  let fetchingId = $state<string | null>(null);
+  function buildChartApiParams(f: BirthFormState): ChartApiParams | null {
+    if (
+      f.year == null ||
+      f.month == null ||
+      f.day == null ||
+      f.hour == null ||
+      f.min == null ||
+      !Number.isFinite(f.year) ||
+      !Number.isFinite(f.month) ||
+      !Number.isFinite(f.day) ||
+      !Number.isFinite(f.hour) ||
+      !Number.isFinite(f.min)
+    ) {
+      return null;
+    }
+    if (f.year < 1900 || f.year > 2100) return null;
+    if (f.month < 1 || f.month > 12 || f.day < 1 || f.day > 31) return null;
+    if (f.hour < 0 || f.hour > 23 || f.min < 0 || f.min > 59) return null;
 
-  onMount(() => {
-    fetchReadings()
-      .then((r) => (readings = r))
-      .catch((e) => (readingsError = e instanceof Error ? e.message : "Failed to load readings"))
-      .finally(() => (readingsLoading = false));
+    const useCoords = f.lat != null && f.lng != null && (f.timezone?.trim() ?? "").length > 0;
+    const useCity = !!(f.city?.trim()) && !!(f.nation?.trim());
+    if (!useCoords && !useCity) return null;
+
+    const base: ChartApiParams = {
+      year: Math.trunc(f.year),
+      month: Math.trunc(f.month),
+      day: Math.trunc(f.day),
+      hour: Math.trunc(f.hour),
+      min: Math.trunc(f.min),
+      house_system: f.house_system,
+    };
+    const trimmedName = f.name.trim();
+    if (trimmedName) base.name = trimmedName;
+
+    if (useCoords) {
+      base.lat = f.lat;
+      base.lng = f.lng;
+      base.timezone = f.timezone!.trim();
+    } else {
+      base.city = f.city!.trim();
+      base.nation = f.nation!.trim();
+      if (f.timezone?.trim()) base.timezone = f.timezone.trim();
+    }
+    return base;
+  }
+
+  const hasValidLocation = $derived(
+    (form.lat != null && form.lng != null && (form.timezone?.trim() ?? "").length > 0) ||
+      (!!(form.city?.trim()) && !!(form.nation?.trim()))
+  );
+
+  const hasCompleteBirthMoment = $derived.by(() => {
+    const f = form;
+    if (
+      f.year == null ||
+      f.month == null ||
+      f.day == null ||
+      f.hour == null ||
+      f.min == null ||
+      !Number.isFinite(f.year) ||
+      !Number.isFinite(f.month) ||
+      !Number.isFinite(f.day) ||
+      !Number.isFinite(f.hour) ||
+      !Number.isFinite(f.min)
+    )
+      return false;
+    if (f.year < 1900 || f.year > 2100) return false;
+    if (f.month < 1 || f.month > 12 || f.day < 1 || f.day > 31) return false;
+    if (f.hour < 0 || f.hour > 23 || f.min < 0 || f.min > 59) return false;
+    return true;
   });
 
   async function handleSubmit() {
     loading = true;
     error = null;
     try {
-      const c = await fetchChart(form);
-      onChartFetched(c, form);
+      const params = buildChartApiParams(form);
+      if (!params) {
+        error = "Please enter your full birth date, time, and location.";
+        return;
+      }
+      const c = await fetchChart(params);
+      onChartFetched(c, params);
     } catch (e) {
       error = e instanceof Error ? e.message : "Failed to fetch chart";
     } finally {
       loading = false;
     }
-  }
-
-  async function handleFetchReading(identifier: string) {
-    fetchingId = identifier;
-    error = null;
-    try {
-      const c = await fetchReadingById(identifier);
-      onChartFetched(c);
-    } catch (e) {
-      error = e instanceof Error ? e.message : "Failed to fetch reading";
-    } finally {
-      fetchingId = null;
-    }
-  }
-
-  function formatReadingLabel(r: ReadingSummary): string {
-    const date = r.birth_datetime.slice(0, 16).replace("T", " ");
-    const name = (r.name || "Unknown").replace(/_/g, " ");
-    return `${name} — ${date}`;
   }
 
   function handleLocationSelect(loc: LocationResult) {
@@ -92,11 +142,6 @@
     form = { ...form, lat: undefined, lng: undefined, timezone: undefined, city: undefined, nation: undefined };
     locationDisplay = "";
   }
-
-  const hasValidLocation = $derived(
-    (form.lat != null && form.lng != null && (form.timezone?.trim() ?? "").length > 0) ||
-    (!!(form.city?.trim()) && !!(form.nation?.trim()))
-  );
 </script>
 
 <div class="form-view">
@@ -107,85 +152,57 @@
 
   <div class="form-and-readings">
     <form class="chart-form" onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
-    <label>
-      <span>Name</span>
-      <input type="text" bind:value={form.name} placeholder="Chart name (optional)" />
-    </label>
-    <label>
-      <span>Date</span>
-      <div class="date-row">
-        <input type="number" bind:value={form.month} min="1" max="12" placeholder="MM" />
-        <input type="number" bind:value={form.day} min="1" max="31" placeholder="DD" />
-        <input type="number" bind:value={form.year} min="1900" max="2100" placeholder="YYYY" />
-      </div>
-    </label>
-    <label>
-      <span>Time (local)</span>
-      <div class="date-row">
-        <input type="number" bind:value={form.hour} min="0" max="23" placeholder="HH" />
-        <input type="number" bind:value={form.min} min="0" max="59" placeholder="MM" />
-      </div>
-    </label>
-    <label>
-      <span>Location</span>
-      <LocationInput value={locationDisplay} onSelect={handleLocationSelect} onClear={handleLocationClear} placeholder="Search for a city…" />
-    </label>
-    <label>
-      <span>House System</span>
-      <div class="house-system-toggle">
-        <button
-          type="button"
-          class="toggle-option"
-          class:active={form.house_system === "whole_sign"}
-          onclick={() => (form = { ...form, house_system: "whole_sign" })}
-        >
-          Whole Sign
-        </button>
-        <button
-          type="button"
-          class="toggle-option"
-          class:active={form.house_system === "placidus"}
-          onclick={() => (form = { ...form, house_system: "placidus" })}
-        >
-          Placidus
-        </button>
-      </div>
-    </label>
-    {#if error}
-      <p class="form-error">{error}</p>
-    {/if}
-    <button type="submit" disabled={loading || !hasValidLocation}>
-      {loading ? "Loading…" : "Get Chart"}
-    </button>
-  </form>
-
-    <section class="previous-readings">
-      <h2>Previous Readings</h2>
-      {#if readingsLoading}
-        <p class="readings-placeholder">Loading…</p>
-      {:else if readingsError}
-        <p class="readings-error">{readingsError}</p>
-      {:else if readings.length === 0}
-        <p class="readings-placeholder">No saved readings yet.</p>
-      {:else}
-        <ul class="readings-list">
-          {#each readings as r}
-            <li>
-              <button
-                class="reading-item"
-                onclick={() => handleFetchReading(r.identifier)}
-                disabled={fetchingId === r.identifier}
-              >
-                {formatReadingLabel(r)}
-                {#if fetchingId === r.identifier}
-                  <span class="loading-dot">…</span>
-                {/if}
-              </button>
-            </li>
-          {/each}
-        </ul>
+      <label>
+        <span>Name</span>
+        <input type="text" bind:value={form.name} placeholder="Chart name (optional)" />
+      </label>
+      <label>
+        <span>Date</span>
+        <div class="date-row">
+          <input type="number" bind:value={form.month} min="1" max="12" placeholder="MM" />
+          <input type="number" bind:value={form.day} min="1" max="31" placeholder="DD" />
+          <input type="number" bind:value={form.year} min="1900" max="2100" placeholder="YYYY" />
+        </div>
+      </label>
+      <label>
+        <span>Time (local)</span>
+        <div class="date-row">
+          <input type="number" bind:value={form.hour} min="0" max="23" placeholder="HH" />
+          <input type="number" bind:value={form.min} min="0" max="59" placeholder="MM" />
+        </div>
+      </label>
+      <label>
+        <span>Location</span>
+        <LocationInput value={locationDisplay} onSelect={handleLocationSelect} onClear={handleLocationClear} placeholder="Search for a city…" />
+      </label>
+      <label>
+        <span>House System</span>
+        <div class="house-system-toggle">
+          <button
+            type="button"
+            class="toggle-option"
+            class:active={form.house_system === "whole_sign"}
+            onclick={() => (form = { ...form, house_system: "whole_sign" })}
+          >
+            Whole Sign
+          </button>
+          <button
+            type="button"
+            class="toggle-option"
+            class:active={form.house_system === "placidus"}
+            onclick={() => (form = { ...form, house_system: "placidus" })}
+          >
+            Placidus
+          </button>
+        </div>
+      </label>
+      {#if error}
+        <p class="form-error">{error}</p>
       {/if}
-    </section>
+      <button type="submit" disabled={loading || !hasValidLocation || !hasCompleteBirthMoment}>
+        {loading ? "Loading…" : "Get Chart"}
+      </button>
+    </form>
   </div>
 </div>
 
@@ -323,68 +340,5 @@
     gap: 2.5rem;
     width: 100%;
     max-width: 400px;
-  }
-
-  .previous-readings {
-    width: 100%;
-  }
-
-  .previous-readings h2 {
-    margin: 0 0 0.75rem;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #8b949e;
-  }
-
-  .readings-placeholder,
-  .readings-error {
-    font-size: 0.85rem;
-    color: #8b949e;
-    margin: 0;
-  }
-
-  .readings-error {
-    color: #f85149;
-  }
-
-  .readings-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  .readings-list li {
-    border-bottom: 1px solid #21262d;
-  }
-
-  .readings-list li:last-child {
-    border-bottom: none;
-  }
-
-  .reading-item {
-    display: block;
-    width: 100%;
-    padding: 0.6rem 0;
-    background: none;
-    border: none;
-    color: #c9d1d9;
-    font-size: 0.9rem;
-    text-align: left;
-    cursor: pointer;
-  }
-
-  .reading-item:hover:not(:disabled) {
-    color: #58a6ff;
-  }
-
-  .reading-item:disabled {
-    opacity: 0.7;
-    cursor: wait;
-  }
-
-  .loading-dot {
-    margin-left: 0.25em;
-    color: #8b949e;
   }
 </style>
